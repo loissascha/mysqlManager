@@ -1,7 +1,39 @@
 ﻿@page "/"
+@using MySqlManager.Services
+@inject MySqlManagerService MySqlManagerService
+@attribute [StreamRendering]
 
-<PageTitle>Home</PageTitle>
+@if (_serverVersions != null)
+{
+    <text>
+        Server Type: @_serverVersions.ServerType<br />
+        Version: @_serverVersions.Version <br/>
+        Protocol Version: @_serverVersions.ProtocolVersion <br/>
+        Version Compile OS: @_serverVersions.VersionCompileOs<br/><br/>
+    </text>
+}
+else
+{
+    <text>Loading...</text>
+}
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+@code {
+
+    private ServerVersions? _serverVersions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _serverVersions = null;
+        await LoadServerVersion();
+    }
+
+    private async Task LoadServerVersion()
+    {
+        Console.WriteLine("Loading server version...");
+        _serverVersions = await MySqlManagerService.GetServerVersion();
+        //await InvokeAsync(StateHasChanged);
+        Console.WriteLine("Loaded. Result: " + _serverVersions);
+    }
+
+}
