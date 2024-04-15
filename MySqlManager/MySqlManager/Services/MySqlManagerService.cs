@@ -19,30 +19,31 @@ public class MySqlManagerService
 
         await using var conn = await EstablishConnection();
 
-        //await using var cmd = new MySqlCommand("SELECT VERSION()", conn);
         await using var cmd = new MySqlCommand("SHOW VARIABLES LIKE '%version%'", conn);
         await using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
             var variableName = reader.GetString(0);
             var variableValue = reader.GetString(1);
-
             
-            if (variableName == "version")
+            switch (variableName)
             {
-                result.Version = variableValue;
-                if (result.Version.Contains("MariaDB"))
+                case "version":
                 {
-                    result.ServerType = "MariaDB";
+                    result.Version = variableValue;
+                    if (result.Version.Contains("MariaDB"))
+                    {
+                        result.ServerType = "MariaDB";
+                    }
+
+                    break;
                 }
-            }
-            else if (variableName == "protocol_version")
-            {
-                result.ProtocolVersion = variableValue;
-            }
-            else if (variableName == "version_compile_os")
-            {
-                result.VersionCompileOs = variableValue;
+                case "protocol_version":
+                    result.ProtocolVersion = variableValue;
+                    break;
+                case "version_compile_os":
+                    result.VersionCompileOs = variableValue;
+                    break;
             }
             
             Console.WriteLine(variableName + ": " + variableValue);
