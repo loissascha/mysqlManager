@@ -11,6 +11,44 @@ public class MySqlManagerService
         await conn.OpenAsync();
         return conn;
     }
+
+    public async Task<List<string>> GetTableList(string databaseName)
+    {
+        var result = new List<string>();
+
+        await using var conn = await EstablishConnection();
+        await using var cmd = new MySqlCommand($"USE {databaseName}; SHOW TABLES", conn);
+        await using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            var tableName = reader.GetString(0);
+            Console.WriteLine(tableName);
+            result.Add(tableName);
+        }
+
+        return result;
+    }
+
+    public async Task<List<DatabaseInformation>> GetDatabaseList()
+    {
+        var result = new List<DatabaseInformation>();
+        
+        await using var conn = await EstablishConnection();
+        await using var cmd = new MySqlCommand("SHOW DATABASES", conn);
+        await using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            var databaseName = reader.GetString(0);
+            var dbInfo = new DatabaseInformation
+            {
+                Name = databaseName,
+                Tables = await GetTableList(databaseName)
+            };
+            result.Add(dbInfo);
+        }
+
+        return result;
+    }
     
     public async Task<ServerInformationDto> GetServerVersion()
     {
@@ -47,7 +85,7 @@ public class MySqlManagerService
                     break;
             }
             
-            Console.WriteLine(variableName + ": " + variableValue);
+            //Console.WriteLine(variableName + ": " + variableValue);
             //return value;
         }
 

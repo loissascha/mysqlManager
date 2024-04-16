@@ -1,0 +1,15 @@
+@page "/database/{Database}"
+@using MySqlManager.Services
+@inject MySqlManagerService MySqlManagerService
+@attribute [StreamRendering]
+
+
+<h1>Database Overview</h1>
+Parameter: @Database
+
+@code {
+
+    [Parameter]
+    public string Database { get; set; }
+
+}
