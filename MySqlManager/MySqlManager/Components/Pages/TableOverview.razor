@@ -1,5 +1,6 @@
 @page "/database/{Database}/browse/{Table}"
 @using MySqlManager.Services
+@using MySqlManager.Dtos
 @inject MySqlManagerService MySqlManagerService
 @attribute [StreamRendering]
 
@@ -7,12 +8,47 @@
 <h1>Database Overview</h1>
 Parameter: @Database / @Table
 
-@code {
+@if (_tableData == null)
+{
+    <div>Loading...</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            @foreach (var head in _tableData.ColumnInformation)
+            {
+                <th>@head.Field</th>
+            }
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var content in _tableData.Content)
+        {
+            <tr>
+            @foreach (var value in content.Values)
+            {
+                <td>@value</td>
+            }
+            </tr>
+        }
+        </tbody>
+    </table>
+}
 
-    [Parameter]
-    public string Database { get; set; }
-    
-    [Parameter]
-    public string Table { get; set; }
+@code {
+    private TableData? _tableData;
+
+    [Parameter] public string Database { get; set; }
+
+    [Parameter] public string Table { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _tableData = null;
+        Console.WriteLine("Getting table contents...");
+        _tableData = await MySqlManagerService.GetTableContents(Database, Table, 0, 30);
+    }
 
 }

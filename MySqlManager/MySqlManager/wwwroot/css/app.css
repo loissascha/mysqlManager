@@ -1,3 +1,11 @@
+.table {
+    --bs-table-accent-bg: var(--color-surface0);
+    --bs-table-bg: var(--color-surface0);
+    --bs-table-striped-color: var(--color-text);
+    --bs-table-striped-bg: var(--color-surface1);
+    color: var(--color-text);
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     background: var(--color-base);

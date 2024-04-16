@@ -12,7 +12,68 @@ public class MySqlManagerService
         return conn;
     }
 
-    public async Task<List<string>> GetTableList(string databaseName)
+    public async Task<TableData> GetTableContents(string databaseName, string tableName, int offset = 0, int limit = 0)
+    {
+        var tableColumnInformation = await GetTableColumnInfos(databaseName, tableName);
+        
+        var result = new TableData
+        {
+            ColumnInformation = tableColumnInformation,
+            Content = new List<Dictionary<int, string?>>()
+        };
+        
+        var fieldsCount = tableColumnInformation.Count;
+        
+        var limits = limit > 0 ? $"LIMIT {offset}, {limit}" : "";
+        
+        await using var conn = await EstablishConnection();
+        await using var cmd = new MySqlCommand($"USE {databaseName}; SELECT * FROM {tableName} {limits}", conn);
+        await using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            var row = new Dictionary<int, string?>();
+            for (var i = 0; i < fieldsCount; i++)
+            {
+                var columnValue = reader.GetValue(i).ToString();
+                row.Add(i, columnValue);
+                //Console.WriteLine($"{tableColumnInformation[i].Field}: {columnValue}");
+            }
+            result.Content.Add(row);
+        }
+
+        return result;
+    }
+
+    private async Task<List<TableColumnInformation>> GetTableColumnInfos(string databaseName, string tableName)
+    {
+        var result = new List<TableColumnInformation>();
+        
+        await using var conn = await EstablishConnection();
+        await using var cmd = new MySqlCommand($"USE {databaseName}; SHOW COLUMNS FROM {tableName}", conn);
+        await using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            var fieldValue = reader.GetValue(0).ToString();
+            var typeValue = reader.GetValue(0).ToString();
+            var nullValue = reader.GetValue(0).ToString();
+            var keyValue = reader.GetValue(0).ToString();
+            var defaultValue = reader.GetValue(0).ToString();
+            var extraValue = reader.GetValue(0).ToString();
+            result.Add(new TableColumnInformation
+            {
+                Field = fieldValue,
+                Type = typeValue,
+                Null = nullValue,
+                Key = keyValue,
+                Default = defaultValue,
+                Extra = extraValue
+            });
+        }
+
+        return result;
+    }
+
+    private async Task<List<string>> GetTableList(string databaseName)
     {
         var result = new List<string>();
 
@@ -22,7 +83,7 @@ public class MySqlManagerService
         while (await reader.ReadAsync())
         {
             var tableName = reader.GetString(0);
-            Console.WriteLine(tableName);
+            //Console.WriteLine(tableName);
             result.Add(tableName);
         }
 
