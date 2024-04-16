@@ -215,8 +215,8 @@ main {
 }
 
 .nav-item a.active {
-    background-color: var(--color-overlay1);
-    color: var(--color-text);
+    background-color: var(--color-accent2);
+    color: var(--color-text-dark);
 }
 
 .nav-item .nav-link:hover {
@@ -245,4 +245,8 @@ main {
         height: calc(100vh - 3.5rem);
         overflow-y: auto;
     }
+}
+
+.card {
+    background-color: var(--color-surface1);
 }

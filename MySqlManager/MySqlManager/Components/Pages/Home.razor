@@ -1,16 +1,22 @@
 ﻿@page "/"
 @using MySqlManager.Services
+@using MySqlManager.Dtos
 @inject MySqlManagerService MySqlManagerService
 @attribute [StreamRendering]
 
-@if (_serverVersions != null)
+@if (_serverInformation != null)
 {
-    <text>
-        Server Type: @_serverVersions.ServerType<br />
-        Version: @_serverVersions.Version <br/>
-        Protocol Version: @_serverVersions.ProtocolVersion <br/>
-        Version Compile OS: @_serverVersions.VersionCompileOs<br/><br/>
-    </text>
+    <div class="card">
+        <div class="card-header">
+            <i class="nf nf-cod-server"></i> Server Information
+        </div>
+        <div class="card-body">
+            Server Type: @_serverInformation.ServerType<br/>
+            Version: @_serverInformation.Version <br/>
+            Protocol Version: @_serverInformation.ProtocolVersion <br/>
+            OS: @_serverInformation.VersionCompileOs
+        </div>
+    </div>
 }
 else
 {
@@ -20,20 +26,20 @@ else
 
 @code {
 
-    private ServerVersions? _serverVersions;
+    private ServerInformationDto? _serverInformation;
 
     protected override async Task OnInitializedAsync()
     {
-        _serverVersions = null;
+        _serverInformation = null;
         await LoadServerVersion();
     }
 
     private async Task LoadServerVersion()
     {
         Console.WriteLine("Loading server version...");
-        _serverVersions = await MySqlManagerService.GetServerVersion();
+        _serverInformation = await MySqlManagerService.GetServerVersion();
         //await InvokeAsync(StateHasChanged);
-        Console.WriteLine("Loaded. Result: " + _serverVersions);
+        Console.WriteLine("Loaded. Result: " + _serverInformation);
     }
 
 }

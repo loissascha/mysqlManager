@@ -36,9 +36,13 @@
     --color-subtext0: #a6adc8;
     --color-subtext1: #bac2de;
     --color-text: #cdd6f4;
+    --color-text-dark: #1e1e2e;
     --color-link: #89b4fa;
     --color-success: #a6e3a1;
     --color-warning: #f9e2af;
     --color-error: #f38ba8;
     --color-tag: #89b4fa;
+    --color-accent0: #b4befe;
+    --color-accent1: #74c7ec;
+    --color-accent2: #fab387;
 }

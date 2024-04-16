@@ -1,4 +1,5 @@
 using MySqlConnector;
+using MySqlManager.Dtos;
 
 namespace MySqlManager.Services;
 
@@ -11,9 +12,9 @@ public class MySqlManagerService
         return conn;
     }
     
-    public async Task<ServerVersions> GetServerVersion()
+    public async Task<ServerInformationDto> GetServerVersion()
     {
-        var result = new ServerVersions();
+        var result = new ServerInformationDto();
 
         await Task.Delay(500);
 
@@ -54,10 +55,3 @@ public class MySqlManagerService
     }
 }
 
-public class ServerVersions
-{
-    public string? ServerType { get; set; }
-    public string? Version { get; set; }
-    public string? ProtocolVersion { get; set; }
-    public string? VersionCompileOs { get; set; }
-}
