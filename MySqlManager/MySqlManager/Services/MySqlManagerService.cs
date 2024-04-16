@@ -19,7 +19,7 @@ public class MySqlManagerService
         var result = new TableData
         {
             ColumnInformation = tableColumnInformation,
-            Content = new List<Dictionary<int, string?>>()
+            Content = new List<List<string?>>()
         };
         
         var fieldsCount = tableColumnInformation.Count;
@@ -31,11 +31,11 @@ public class MySqlManagerService
         await using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            var row = new Dictionary<int, string?>();
+            var row = new List<string?>();
             for (var i = 0; i < fieldsCount; i++)
             {
                 var columnValue = reader.GetValue(i).ToString();
-                row.Add(i, columnValue);
+                row.Add(columnValue);
                 //Console.WriteLine($"{tableColumnInformation[i].Field}: {columnValue}");
             }
             result.Content.Add(row);
@@ -49,16 +49,17 @@ public class MySqlManagerService
         var result = new List<TableColumnInformation>();
         
         await using var conn = await EstablishConnection();
+        
         await using var cmd = new MySqlCommand($"USE {databaseName}; SHOW COLUMNS FROM {tableName}", conn);
         await using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
             var fieldValue = reader.GetValue(0).ToString();
-            var typeValue = reader.GetValue(0).ToString();
-            var nullValue = reader.GetValue(0).ToString();
-            var keyValue = reader.GetValue(0).ToString();
-            var defaultValue = reader.GetValue(0).ToString();
-            var extraValue = reader.GetValue(0).ToString();
+            var typeValue = reader.GetValue(1).ToString();
+            var nullValue = reader.GetValue(2).ToString();
+            var keyValue = reader.GetValue(3).ToString();
+            var defaultValue = reader.GetValue(4).ToString();
+            var extraValue = reader.GetValue(5).ToString();
             result.Add(new TableColumnInformation
             {
                 Field = fieldValue,
@@ -68,6 +69,28 @@ public class MySqlManagerService
                 Default = defaultValue,
                 Extra = extraValue
             });
+            Console.WriteLine($"{fieldValue} {typeValue} {nullValue} {keyValue} {defaultValue} {extraValue}");
+        }
+        await reader.CloseAsync();
+
+        // get references to other tables 
+        await using var cmd2 = new MySqlCommand($"SELECT TABLE_NAME, COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = '{databaseName}' AND TABLE_NAME = '{tableName}';", conn);
+        await using var reader2 = await cmd2.ExecuteReaderAsync();
+        while (await reader2.ReadAsync())
+        {
+            var columnName = reader.GetValue(1).ToString();
+            var constraintName = reader.GetValue(2).ToString();
+            var referencedTableName = reader.GetValue(3).ToString();
+            var referencedColumnName = reader.GetValue(4).ToString();
+
+            foreach (var x in result)
+            {
+                if (x.Field != columnName)
+                    continue;
+                x.ReferencedTableName = referencedTableName;
+                x.ReferencedColumnName = referencedColumnName;
+                Console.WriteLine($"Reference: {columnName} -> {referencedTableName}/{referencedColumnName}");
+            }
         }
 
         return result;

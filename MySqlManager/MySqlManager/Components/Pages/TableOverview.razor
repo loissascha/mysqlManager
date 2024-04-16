@@ -14,7 +14,7 @@ Parameter: @Database / @Table
 }
 else
 {
-    <table class="table table-striped">
+    <table class="table table-sm table-bordered table-striped">
         <thead>
         <tr>
             @foreach (var head in _tableData.ColumnInformation)
@@ -24,12 +24,21 @@ else
         </tr>
         </thead>
         <tbody>
-        @foreach (var content in _tableData.Content)
+        @foreach (var row in _tableData.Content)
         {
+            var i = 0;
             <tr>
-            @foreach (var value in content.Values)
+            @foreach (var column in row)
             {
-                <td>@value</td>
+                if (_tableData.ColumnInformation[i].Key == "PRI")
+                {
+                    <th>@column</th>
+                }
+                else
+                {
+                    <td>@column</td>
+                }
+                i++;
             }
             </tr>
         }

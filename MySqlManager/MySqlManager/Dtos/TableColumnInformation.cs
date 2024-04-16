@@ -8,4 +8,6 @@ public class TableColumnInformation
     public string? Key { get; set; }
     public string? Default { get; set; }
     public string? Extra { get; set; }
+    public string? ReferencedTableName { get; set; }
+    public string? ReferencedColumnName { get; set; }
 }

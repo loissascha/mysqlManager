@@ -4,6 +4,7 @@
     --bs-table-striped-color: var(--color-text);
     --bs-table-striped-bg: var(--color-surface1);
     color: var(--color-text);
+    border-color: var(--color-crust);
 }
 
 html, body {
@@ -240,7 +241,7 @@ main {
 }
 
 .nav-item .nav-link.active ~ .nav-link-sub.active {
-    background-color: var(--color-accent2);
+    background-color: var(--color-accent0);
     color: var(--color-text-dark);
 }
 
@@ -250,11 +251,16 @@ main {
 }
 
 .nav-item a.active {
-    background-color: var(--color-accent2);
+    background-color: var(--color-accent0);
     color: var(--color-text-dark);
 }
 
 .nav-item .nav-link:hover {
+    background-color: var(--color-accent1);
+    color: var(--color-text-dark);
+}
+
+.nav-item .nav-link.active ~ .nav-link-sub:hover {
     background-color: var(--color-accent1);
     color: var(--color-text-dark);
 }
