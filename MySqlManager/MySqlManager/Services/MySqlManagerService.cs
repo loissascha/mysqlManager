@@ -193,6 +193,11 @@ public class MySqlManagerService
         {
             throw new ArgumentException("SQL must be provided.");
         }
+
+        if (!sql.Contains("LIMIT"))
+        {
+            sql += " LIMIT 0, 30";
+        }
         
         Console.WriteLine($"RunSQL: {sql}");
         
