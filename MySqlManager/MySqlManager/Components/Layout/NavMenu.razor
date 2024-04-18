@@ -28,7 +28,7 @@
                     </NavLink>
                     @foreach (var table in item.Tables)
                     {
-                        <NavLink class="nav-link-sub" href="@($"/database/{item.Name}/browse/{table}")">
+                        <NavLink class="nav-link-sub" href="@($"/database/{item.Name}/{table}")">
                             <i class="nf nf-fa-list_ul"></i> @table
                         </NavLink>
                     }

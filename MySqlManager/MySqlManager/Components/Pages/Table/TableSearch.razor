@@ -1,0 +1,25 @@
+@page "/database/{Database}/{Table}/search"
+@using System.Runtime.InteropServices
+@using MySqlManager.Components.Layout
+@using MySqlManager.Services
+@using MySqlManager.Dtos
+@inject MySqlManagerService MySqlManagerService
+@attribute [StreamRendering]
+
+<h1>Search</h1>
+Parameter: @Database / @Table
+
+@code {
+
+    [Parameter] public string? Database { get; set; }
+
+    [Parameter] public string? Table { get; set; }
+    
+    [CascadingParameter] public MainLayout? Layout { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        Layout?.SetTopRowForTableView(Database, Table);
+    }
+
+}

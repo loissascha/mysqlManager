@@ -70,7 +70,7 @@ main {
 .top-row {
     background-color: var(--color-surface1);
     border-bottom: 1px solid var(--color-crust);
-    justify-content: flex-end;
+    justify-content: flex-start;
     height: 3.5rem;
     display: flex;
     align-items: center;
