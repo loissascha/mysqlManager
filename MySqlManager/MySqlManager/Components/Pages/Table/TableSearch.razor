@@ -17,7 +17,7 @@ Parameter: @Database / @Table
     
     [CascadingParameter] public MainLayout? Layout { get; set; }
     
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         Layout?.SetTopRowForTableView(Database, Table);
     }

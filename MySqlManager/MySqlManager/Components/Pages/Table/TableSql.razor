@@ -1,25 +1,92 @@
 @page "/database/{Database}/{Table}/sql"
-@using System.Runtime.InteropServices
+@using System.Data
 @using MySqlManager.Components.Layout
 @using MySqlManager.Services
-@using MySqlManager.Dtos
 @inject MySqlManagerService MySqlManagerService
-@attribute [StreamRendering]
+@rendermode InteractiveServer
 
 <h1>SQL</h1>
 Parameter: @Database / @Table
+<br /><br />
+<textarea @bind="SqlAreaContent" class="sqlarea"></textarea><br />
+<button class="btn btn-primary" @onclick="PressGo">Go</button>
+@if (_resultExceptionText != null)
+{
+    <div class="alert alert-danger mt-4" role="alert">
+        @_resultExceptionText
+    </div>
+}
+@if (_resultDataTable != null)
+{
+    <table class="table table-sm table-bordered table-striped mt-4">
+        <thead>
+        <tr>
+            @foreach (var column in _resultDataTable.Columns)
+            {
+                <th>@column.ToString()</th>
+            }
+        </tr>
+        </thead>
+        <tbody>
+        
+            @foreach (var row in _resultDataTable.Rows)
+            {
+                var c = row as DataRow;
+                <tr>
+                    @if (c?.ItemArray != null)
+                    {
+                        foreach (var item in c.ItemArray)
+                        {
+                            <td>@item?.ToString()</td>
+                        }
+                    }
+                </tr>
+            }
+        
+        </tbody>
+    </table>
+}
 
 @code {
 
     [Parameter] public string? Database { get; set; }
 
     [Parameter] public string? Table { get; set; }
-    
+
     [CascadingParameter] public MainLayout? Layout { get; set; }
-    
-    protected override async Task OnInitializedAsync()
+
+    private string? SqlAreaContent { get; set; }
+
+    private DataTable? _resultDataTable;
+
+    private string? _resultExceptionText;
+
+    protected override void OnInitialized()
     {
+        _resultDataTable = null;
         Layout?.SetTopRowForTableView(Database, Table);
     }
+
+    private async Task PressGo()
+    {
+        _resultDataTable = null;
+        _resultExceptionText = null;
+        StateHasChanged();
+        
+        Console.WriteLine("Test");
+        
+        try
+        {
+            _resultDataTable = await MySqlManagerService.RunSql(Database, string.IsNullOrEmpty(SqlAreaContent) ? "" : SqlAreaContent);
+        }
+        catch (Exception exception)
+        {
+            _resultExceptionText = exception.Message;
+        }
+
+        StateHasChanged();
+    }
+
+
 
 }

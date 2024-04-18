@@ -291,3 +291,27 @@ main {
 .card {
     background-color: var(--color-surface1);
 }
+
+.sqlarea {
+    width:100%;
+    min-height:150px;
+    background-color: var(--color-surface0);
+    color: var(--color-text);
+    border-color: var(--color-surface1);
+}
+
+.btn-primary {
+    background-color: var(--color-accent0);
+    border-color: var(--color-accent0);
+    color: var(--color-text-dark);
+}
+
+.btn-primary:hover, .btn-primary:active, .btn-primary:focus {
+    background-color: var(--color-accent1);
+    border-color: var(--color-accent1);
+    color: var(--color-text-dark);
+}
+
+.btn-primary:focus {
+    box-shadow: 0 0 0 0.2rem var(--color-accent0);
+}

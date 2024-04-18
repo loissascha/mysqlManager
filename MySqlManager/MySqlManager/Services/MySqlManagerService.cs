@@ -1,3 +1,4 @@
+using System.Data;
 using MySqlConnector;
 using MySqlManager.Dtos;
 
@@ -12,8 +13,13 @@ public class MySqlManagerService
         return conn;
     }
 
-    public async Task<TableData> GetTableContents(string databaseName, string tableName, int offset = 0, int limit = 0)
+    public async Task<TableData> GetTableContents(string? databaseName, string? tableName, int offset = 0, int limit = 0)
     {
+        if (string.IsNullOrEmpty(databaseName) || string.IsNullOrEmpty(tableName))
+        {
+            throw new ArgumentException("Database name and table name must be provided");
+        }
+        
         var tableColumnInformation = await GetTableColumnInfos(databaseName, tableName);
         
         var result = new TableData
@@ -44,8 +50,13 @@ public class MySqlManagerService
         return result;
     }
 
-    private async Task<List<TableColumnInformation>> GetTableColumnInfos(string databaseName, string tableName)
+    private async Task<List<TableColumnInformation>> GetTableColumnInfos(string? databaseName, string? tableName)
     {
+        if (string.IsNullOrEmpty(databaseName) || string.IsNullOrEmpty(tableName))
+        {
+            throw new ArgumentException("Database name and table name must be provided");
+        }
+        
         var result = new List<TableColumnInformation>();
         
         await using var conn = await EstablishConnection();
@@ -174,6 +185,25 @@ public class MySqlManagerService
         }
 
         return result;
+    }
+
+    public async Task<DataTable> RunSql(string? database, string? sql)
+    {
+        if (string.IsNullOrEmpty(sql))
+        {
+            throw new ArgumentException("SQL must be provided.");
+        }
+        
+        Console.WriteLine($"RunSQL: {sql}");
+        
+        await using var conn = await EstablishConnection();
+
+        await using var cmd = new MySqlCommand($"USE {database};{sql}", conn);
+        var dataTable = new DataTable();
+        await using var dataReader = await cmd.ExecuteReaderAsync();
+        dataTable.Load(dataReader);
+
+        return dataTable;
     }
 }
 

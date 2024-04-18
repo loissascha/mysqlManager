@@ -45,4 +45,24 @@
     --color-accent0: #b4befe;
     --color-accent1: #74c7ec;
     --color-accent2: #fab387;
+    
+    --bs-purple: #cba6f7;
+    --bs-pink: #f5c2e7;
+    --bs-red: #f38ba8;
+    --bs-orange: #fab387;
+    --bs-yellow: #f9e2af;
+    --bs-green: #a6e3a1;
+    --bs-teal: #94e2d5;
+    --bs-cyan: #74c7ec;
+    --bs-white: #cdd6f4;
+    --bs-gray: #585b70;
+    --bs-gray-dark: #313244;
+    --bs-primary: #89b4fa;
+    --bs-secondary: #b4befe;
+    --bs-success: #a6e3a1;
+    --bs-info: #89dceb;
+    --bs-warning: #f9e2af;
+    --bs-danger: #f38ba8;
+    
 }
+
