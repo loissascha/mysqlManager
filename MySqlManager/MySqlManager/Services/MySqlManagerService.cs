@@ -1,4 +1,5 @@
 using System.Data;
+using System.Text.RegularExpressions;
 using MySqlConnector;
 using MySqlManager.Dtos;
 
@@ -187,28 +188,67 @@ public class MySqlManagerService
         return result;
     }
 
-    public async Task<DataTable> RunSql(string? database, string? sql)
+    public async Task<RunSqlResult> RunSql(string? database, string? sql)
     {
         if (string.IsNullOrEmpty(sql))
         {
             throw new ArgumentException("SQL must be provided.");
         }
 
-        if (!sql.Contains("LIMIT"))
+        var result = new RunSqlResult();
+        
+        await using var conn = await EstablishConnection();
+        
+        // if its a select query -> get the actual count for pagination
+        var resultCount = 0;
+        if (sql.ToLower().Contains("select"))
         {
-            sql += " LIMIT 0, 30";
+            try
+            {
+                var countSql = ConvertToCountQuery(sql);
+                await using var countCmd = new MySqlCommand($"USE {database};{countSql}", conn);
+                resultCount = Convert.ToInt32(await countCmd.ExecuteScalarAsync());
+            }
+            catch (ArgumentException)
+            {
+                resultCount = -1;
+            }
+        }
+        result.ResultCount = resultCount;
+
+        if (!sql.ToLower().Contains("limit"))
+        {
+            sql += " LIMIT 0, 300";
+            result.Offset = 0;
+            result.Limit = 300;
         }
         
         Console.WriteLine($"RunSQL: {sql}");
         
-        await using var conn = await EstablishConnection();
-
         await using var cmd = new MySqlCommand($"USE {database};{sql}", conn);
         var dataTable = new DataTable();
         await using var dataReader = await cmd.ExecuteReaderAsync();
         dataTable.Load(dataReader);
+        await dataReader.CloseAsync();
 
-        return dataTable;
+        result.DataTable = dataTable;
+
+        return result;
+    }
+    
+    private static string ConvertToCountQuery(string originalQuery)
+    {
+        var match = Regex.Match(originalQuery, @"SELECT\s+.*\s+FROM", RegexOptions.IgnoreCase);
+        if (match.Success)
+        {
+            var selectPart = match.Value;
+            var countQuery = originalQuery.Replace(selectPart, "SELECT COUNT(*) FROM");
+            return countQuery;
+        }
+        else
+        {
+            throw new ArgumentException("SQL does not contain a valid SELECT ... FROM clause.");
+        }
     }
 }
 

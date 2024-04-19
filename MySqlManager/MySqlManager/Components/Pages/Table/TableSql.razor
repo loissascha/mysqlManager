@@ -1,6 +1,7 @@
 @page "/database/{Database}/{Table}/sql"
 @using System.Data
 @using MySqlManager.Components.Layout
+@using MySqlManager.Dtos
 @using MySqlManager.Services
 @inject MySqlManagerService MySqlManagerService
 @rendermode InteractiveServer
@@ -16,12 +17,13 @@ Parameter: @Database / @Table
         @_resultExceptionText
     </div>
 }
-@if (_resultDataTable != null)
+@if (_runSqlResult != null)
 {
-    <table class="table table-sm table-bordered table-striped mt-4">
+    <p class="mt-4">Showing @_runSqlResult.Offset-@(_runSqlResult.Offset + _runSqlResult.Limit) of @_runSqlResult.ResultCount Results</p>
+    <table class="table table-sm table-bordered table-striped mt-2">
         <thead>
         <tr>
-            @foreach (var column in _resultDataTable.Columns)
+            @foreach (var column in _runSqlResult.DataTable.Columns)
             {
                 <th>@column.ToString()</th>
             }
@@ -29,7 +31,7 @@ Parameter: @Database / @Table
         </thead>
         <tbody>
         
-            @foreach (var row in _resultDataTable.Rows)
+            @foreach (var row in _runSqlResult.DataTable.Rows)
             {
                 var c = row as DataRow;
                 <tr>
@@ -57,27 +59,26 @@ Parameter: @Database / @Table
 
     private string? SqlAreaContent { get; set; }
 
-    private DataTable? _resultDataTable;
+    private RunSqlResult? _runSqlResult;
 
     private string? _resultExceptionText;
 
     protected override void OnInitialized()
     {
-        _resultDataTable = null;
+        _runSqlResult = null;
         Layout?.SetTopRowForTableView(Database, Table);
     }
 
     private async Task PressGo()
     {
-        _resultDataTable = null;
+        _runSqlResult = null;
         _resultExceptionText = null;
         StateHasChanged();
         
-        Console.WriteLine("Test");
-        
         try
         {
-            _resultDataTable = await MySqlManagerService.RunSql(Database, string.IsNullOrEmpty(SqlAreaContent) ? "" : SqlAreaContent);
+            //await Task.Delay(65000);
+            _runSqlResult = await MySqlManagerService.RunSql(Database, string.IsNullOrEmpty(SqlAreaContent) ? "" : SqlAreaContent);
         }
         catch (Exception exception)
         {
