@@ -60,7 +60,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Layout?.SetTopRowForTableView(Database, Table);
+        Layout?.SetTopRowForTableView(Database, Table, "browse");
         _tableData = null;
         Console.WriteLine("Getting table contents...");
         _tableData = await MySqlManagerService.GetTableContents(Database, Table, 0, 30);

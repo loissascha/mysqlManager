@@ -7,7 +7,7 @@
         </div>
 
         <main>
-            <div class="top-row px-4">
+            <div class="top-row px-0 ps-0">
                 @TopRow
             </div>
 
@@ -33,14 +33,14 @@
         StateHasChanged();
     }
 
-    public void SetTopRowForTableView(string? database, string? table)
+    public void SetTopRowForTableView(string? database, string? table, string? active = null)
     {
         SetTopRow(@<div class="container-fluid">
             <ul class="list-unstyled d-flex flex-row align-items-center">
-                <li class=""><a class="" href="@($"/database/{database}/{table}")">Browse</a></li>
-                <li class=""><a class="" href="@($"/database/{database}/{table}/sql")">SQL</a></li>
-                <li class=""><a class="" href="@($"/database/{database}/{table}/search")">Search</a></li>
-                <li class=""><a class="" href="@($"/database/{database}/{table}/insert")">Insert</a></li>
+                <li class=""><a class="btn btn-primary ms-0 me-3 mt-3 @(active == "browse" ? "active" : "")" href="@($"/database/{database}/{table}")">Browse</a></li>
+                <li class=""><a class="btn btn-primary me-3 mt-3 @(active == "sql" ? "active" : "")" href="@($"/database/{database}/{table}/sql")">SQL</a></li>
+                <li class=""><a class="btn btn-primary me-3 mt-3 @(active == "search" ? "active" : "")" href="@($"/database/{database}/{table}/search")">Search</a></li>
+                <li class=""><a class="btn btn-primary me-0 mt-3 @(active == "insert" ? "active" : "")" href="@($"/database/{database}/{table}/insert")">Insert</a></li>
             </ul>
         </div>);
     }

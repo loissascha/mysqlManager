@@ -312,6 +312,12 @@ main {
     color: var(--color-text-dark);
 }
 
+.btn-primary.active {
+    background-color: var(--color-accent1);
+    border-color: var(--color-accent1);
+    color: var(--color-text-dark);
+}
+
 .btn-primary:focus {
     box-shadow: 0 0 0 0.2rem var(--color-accent0);
 }
