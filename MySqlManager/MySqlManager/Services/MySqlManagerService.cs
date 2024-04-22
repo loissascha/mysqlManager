@@ -110,9 +110,9 @@ public class MySqlManagerService
         return result;
     }
 
-    private async Task<List<string>> GetTableList(string databaseName)
+    private async Task<List<TableInformation>> GetTableList(string databaseName, bool includeTableInformation = true)
     {
-        var result = new List<string>();
+        var result = new List<TableInformation>();
 
         await using var conn = await EstablishConnection();
         await using var cmd = new MySqlCommand($"USE {databaseName}; SHOW TABLES", conn);
@@ -120,14 +120,43 @@ public class MySqlManagerService
         while (await reader.ReadAsync())
         {
             var tableName = reader.GetString(0);
-            //Console.WriteLine(tableName);
-            result.Add(tableName);
+            if (includeTableInformation)
+            {
+                var tableInformation = await GetTableInformation(databaseName, tableName);
+                result.Add(tableInformation);
+            }
+            else
+            {
+                result.Add(new TableInformation()
+                {
+                    Name = tableName
+                });
+            }
         }
 
         return result;
     }
 
-    public async Task<List<DatabaseInformation>> GetDatabaseList()
+    private async Task<TableInformation> GetTableInformation(string database, string table)
+    {
+        var result = new TableInformation();
+        result.Name = table;
+        
+        await using var conn = await EstablishConnection();
+        await using var cmd = new MySqlCommand($"USE information_schema;SELECT table_collation, engine, TABLE_ROWS, ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) as `Size in MB` FROM tables WHERE table_schema = '{database}' AND table_name = '{table}'", conn);
+        await using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            result.Collation = reader.GetValue(0).ToString();
+            result.Engine = reader.GetValue(1).ToString();
+            result.Rows = reader.GetValue(2).ToString();
+            result.SizeInMb = reader.GetValue(3).ToString();
+        }
+
+        return result;
+    }
+
+    public async Task<List<DatabaseInformation>> GetDatabaseList(bool includeTableInformation = true)
     {
         var result = new List<DatabaseInformation>();
         
@@ -140,7 +169,7 @@ public class MySqlManagerService
             var dbInfo = new DatabaseInformation
             {
                 Name = databaseName,
-                Tables = await GetTableList(databaseName)
+                Tables = await GetTableList(databaseName, includeTableInformation)
             };
             result.Add(dbInfo);
         }
