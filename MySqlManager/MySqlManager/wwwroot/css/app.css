@@ -321,3 +321,7 @@ main {
 .btn-primary:focus {
     box-shadow: 0 0 0 0.2rem var(--color-accent0);
 }
+
+#toprow {
+    padding-left: 0 !important;
+}
