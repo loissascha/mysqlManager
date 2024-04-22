@@ -110,7 +110,7 @@ public class MySqlManagerService
         return result;
     }
 
-    private async Task<List<TableInformation>> GetTableList(string databaseName, bool includeTableInformation = true)
+    public async Task<List<TableInformation>> GetTableList(string databaseName, bool includeTableInformation = true)
     {
         var result = new List<TableInformation>();
 
@@ -150,7 +150,7 @@ public class MySqlManagerService
             result.Collation = reader.GetValue(0).ToString();
             result.Engine = reader.GetValue(1).ToString();
             result.Rows = reader.GetValue(2).ToString();
-            result.SizeInMb = reader.GetValue(3).ToString();
+            result.SizeInMb = reader.GetDecimal(3);
         }
 
         return result;

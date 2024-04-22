@@ -1,4 +1,5 @@
 @page "/database/{Database}"
+@using MySqlManager.Dtos
 @using MySqlManager.Services
 @inject MySqlManagerService MySqlManagerService
 @attribute [StreamRendering]
@@ -7,9 +8,82 @@
 <h1>Database Overview</h1>
 Parameter: @Database
 
+@if (_tableList == null)
+{
+    if (_loading)
+    {
+        <div class="mt-4">Loading...</div>
+    }
+}
+else
+{
+    <div class="mt-4">
+        <table class="table table-sm table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>Table</th>
+                <th>Rows</th>
+                <th>Engine</th>
+                <th>Collation</th>
+                <th>Size</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var table in _tableList)
+            {
+                <tr>
+                    <td>@table.Name</td>
+                    <td>@table.Rows</td>
+                    <td>@table.Engine</td>
+                    <td>@table.Collation</td>
+                    <td>
+                        @if (table.SizeInMb < 1)
+                        {
+                            var sizeInKb = Math.Round((decimal)table.SizeInMb * 1000, 1);
+                            <text>@sizeInKb.ToString("F1") KB</text>
+                        }
+                        else if(table.SizeInMb > 1000)
+                        {
+                            var sizeInGb = Math.Round((decimal)table.SizeInMb / 1000, 1);
+                            <text>@sizeInGb.ToString("F1") GB</text>
+                        }
+                        else if(table.SizeInMb != null)
+                        {
+                            var sizeInMb = Math.Round((decimal)table.SizeInMb, 1);
+                            <text>@sizeInMb.ToString("F1") MB</text>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
+
 @code {
+    private List<TableInformation>? _tableList;
+    private bool _loading;
 
     [Parameter]
     public string? Database { get; set; }
 
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _tableList = null;
+        _loading = false;
+        await LoadTableList();
+    }
+
+    private async Task LoadTableList()
+    {
+        if (Database == null) return;
+        if (Database == "mysql") return;
+        if (Database == "sys") return;
+        if (Database == "performance_schema") return;
+        if (Database == "information_schema") return;
+        _loading = true;
+        Console.WriteLine("Loading table list...");
+        _tableList = await MySqlManagerService.GetTableList(Database, true);
+    }
 }
