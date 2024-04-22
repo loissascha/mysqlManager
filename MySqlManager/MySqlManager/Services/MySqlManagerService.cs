@@ -235,13 +235,20 @@ public class MySqlManagerService
             throw new ArgumentException("SQL must be provided.");
         }
 
+        // remove ending ';' if there is one (fixes issue with limit if it's not manually set)
+        sql = sql.Trim();
+        if (sql.EndsWith(';'))
+        {
+            sql = sql.TrimEnd(';');
+        }
+
         var result = new RunSqlResult();
         
         await using var conn = await EstablishConnection();
         
         // if its a select query -> get the actual count for pagination
         var resultCount = 0;
-        if (sql.ToLower().Contains("select"))
+        if (sql.StartsWith("select", StringComparison.CurrentCultureIgnoreCase))
         {
             try
             {
@@ -256,7 +263,8 @@ public class MySqlManagerService
         }
         result.ResultCount = resultCount;
 
-        if (!sql.ToLower().Contains("limit"))
+        // add limit if there is none
+        if (!sql.Contains("limit", StringComparison.CurrentCultureIgnoreCase))
         {
             sql += " LIMIT 0, 300";
             result.Offset = 0;
