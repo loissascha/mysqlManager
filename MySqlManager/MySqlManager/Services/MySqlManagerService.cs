@@ -7,9 +7,11 @@ namespace MySqlManager.Services;
 
 public class MySqlManagerService
 {
+    private const string ConnectionString = "server=localhost;port=30306;user=root;password=root";
+    
     private static async Task<MySqlConnection> EstablishConnection()
     {
-        var conn = new MySqlConnection("server=localhost;port=30306;user=root;password=root");
+        var conn = new MySqlConnection(ConnectionString);
         await conn.OpenAsync();
         return conn;
     }
@@ -173,6 +175,15 @@ public class MySqlManagerService
 
                     break;
                 }
+                case "version_comment":
+                {
+                    if (variableValue.ToLower().Contains("mysql community server") && string.IsNullOrEmpty(result.ServerType))
+                    {
+                        result.ServerType = variableValue;
+                    }
+
+                    break;
+                }
                 case "protocol_version":
                     result.ProtocolVersion = variableValue;
                     break;
@@ -181,7 +192,7 @@ public class MySqlManagerService
                     break;
             }
             
-            //Console.WriteLine(variableName + ": " + variableValue);
+            Console.WriteLine(variableName + ": " + variableValue);
             //return value;
         }
 
