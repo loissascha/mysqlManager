@@ -3,7 +3,7 @@
 @using MySqlManager.Dtos
 @inject MySqlManagerService MySqlManagerService
 @inject SettingsService SettingsService
-@attribute [StreamRendering]
+@rendermode InteractiveServer
 
 @if (_errors != null)
 {
@@ -102,6 +102,8 @@ else
 
     private void SaveConfigButton()
     {
+        Console.WriteLine("SaveConfig Button");
+        
         _errors = new List<string>();
 
         if (string.IsNullOrEmpty(ConfigHost))

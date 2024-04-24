@@ -55,6 +55,8 @@ public class SettingsService
         if (Settings == null)
             throw new Exception("Settings file is corrupted!");
         
+        Console.WriteLine("Setting Connection String and saving Settings...");
+        
         Settings!.ConnectionString = $"server={host};port={port};user={user};password={password};";
         SaveSettings();
     }
