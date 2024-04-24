@@ -26,9 +26,12 @@
                     <NavLink class="nav-link" href="@($"/database/{item.Name}")">
                         <i class="nf nf-fa-database"></i> @item.Name
                     </NavLink>
+                    <NavLink class="nav-link-sub" href="@($"/database/{item.Name}/new/table")">
+                        <i class="nf nf-fa-plus"></i> New Table
+                    </NavLink>
                     @foreach (var table in item.Tables)
                     {
-                        <NavLink class="nav-link-sub" href="@($"/database/{item.Name}/{table.Name}")">
+                        <NavLink class="nav-link-sub" href="@($"/database/{item.Name}/table/{table.Name}")">
                             <i class="nf nf-fa-list_ul"></i> @table.Name
                         </NavLink>
                     }

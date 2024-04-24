@@ -37,10 +37,10 @@
     {
         SetTopRow(@<div class="container-fluid">
             <ul class="list-unstyled d-flex flex-row align-items-center">
-                <li class=""><a class="btn btn-primary ms-0 me-2 mt-3 @(active == "browse" ? "active" : "")" href="@($"/database/{database}/{table}")">Browse</a></li>
-                <li class=""><a class="btn btn-primary me-2 mt-3 @(active == "sql" ? "active" : "")" href="@($"/database/{database}/{table}/sql")">SQL</a></li>
-                <li class=""><a class="btn btn-primary me-2 mt-3 @(active == "search" ? "active" : "")" href="@($"/database/{database}/{table}/search")">Search</a></li>
-                <li class=""><a class="btn btn-primary mt-3 @(active == "insert" ? "active" : "")" href="@($"/database/{database}/{table}/insert")">Insert</a></li>
+                <li class=""><a class="btn btn-primary ms-0 me-2 mt-3 @(active == "browse" ? "active" : "")" href="@($"/database/{database}/table/{table}")">Browse</a></li>
+                <li class=""><a class="btn btn-primary me-2 mt-3 @(active == "sql" ? "active" : "")" href="@($"/database/{database}/table/{table}/sql")">SQL</a></li>
+                <li class=""><a class="btn btn-primary me-2 mt-3 @(active == "search" ? "active" : "")" href="@($"/database/{database}/table/{table}/search")">Search</a></li>
+                <li class=""><a class="btn btn-primary mt-3 @(active == "insert" ? "active" : "")" href="@($"/database/{database}/table/{table}/insert")">Insert</a></li>
             </ul>
         </div>);
     }

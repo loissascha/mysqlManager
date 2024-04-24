@@ -32,7 +32,7 @@ else
             @foreach (var table in _tableList)
             {
                 <tr>
-                    <td><a href="@($"/database/{Database}/{table.Name}")">@table.Name</a></td>
+                    <td><a href="@($"/database/{Database}/table/{table.Name}")">@table.Name</a></td>
                     <td>@table.Rows</td>
                     <td>@table.Engine</td>
                     <td>@table.Collation</td>
