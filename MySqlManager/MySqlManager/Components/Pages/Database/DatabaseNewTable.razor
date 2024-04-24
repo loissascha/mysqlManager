@@ -1,0 +1,14 @@
+@page "/database/{Database}/new/table"
+@using MySqlManager.Dtos
+@using MySqlManager.Services
+@inject MySqlManagerService MySqlManagerService
+@rendermode InteractiveServer
+
+<h1>New Table</h1>
+
+@code {
+
+    [Parameter]
+    public string? Database { get; set; }
+
+}
