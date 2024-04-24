@@ -1,3 +1,7 @@
+using System.Diagnostics;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using MySqlManager;
 using MySqlManager.Components;
 using MySqlManager.Services;
 
@@ -27,4 +31,28 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-await app.RunAsync();
+await app.StartAsync();
+
+var mainProcessId = Process.GetCurrentProcess().Id;
+Console.WriteLine("Own Process ID: " + Process.GetCurrentProcess().Id);
+
+var server = app.Services.GetService<IServer>();
+var addressFeature = server?.Features.Get<IServerAddressesFeature>();
+
+var electronStarted = false;
+foreach (var address in addressFeature?.Addresses!)
+{
+    Console.WriteLine("Server is listening on address: " + address);
+    if (!electronStarted)
+    {
+        Task.Run(() =>
+        {
+            var electron = new Electron();
+            electron.Start(address, mainProcessId);
+        });
+
+        electronStarted = true;
+    }
+}
+
+await app.WaitForShutdownAsync();
