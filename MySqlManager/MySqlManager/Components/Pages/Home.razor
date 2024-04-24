@@ -2,6 +2,7 @@
 @using MySqlManager.Services
 @using MySqlManager.Dtos
 @inject MySqlManagerService MySqlManagerService
+@inject SettingsService SettingsService
 @attribute [StreamRendering]
 
 @if (_serverInformation != null)
@@ -20,13 +21,47 @@
 }
 else
 {
-    <text>Loading...</text>
+    if (_loading)
+    {
+        <text>Loading...</text>
+    }
+    else
+    {
+        if (string.IsNullOrEmpty(SettingsService.Settings?.ConnectionString))
+        {
+            <div class="alert alert-warning">Please configure your connection string!</div>
+            
+            <div class="mb-3">
+                <label for="host" class="form-label">Host</label>
+                <input id="host" class="form-control" type="text" required />
+            </div>
+            <div class="mb-3">
+                <label for="port" class="form-label">Port</label>
+                <input id="port" class="form-control" type="text" required />
+            </div>
+            <div class="mb-3">
+                <label for="user" class="form-label">User</label>
+                <input id="user" class="form-control" type="text" required />
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input id="password" class="form-control" type="text" />
+            </div>
+            <button class="btn btn-primary">Save Configuration</button>
+        }
+        else
+        {
+            // No connection possible -> change settings or something
+            <div class="alert alert-danger">No server connection possible. Please make sure your server is running.</div>
+        }
+    }
 }
 
 
 @code {
 
     private ServerInformationDto? _serverInformation;
+    private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -36,10 +71,17 @@ else
 
     private async Task LoadServerVersion()
     {
-        Console.WriteLine("Loading server version...");
-        _serverInformation = await MySqlManagerService.GetServerVersion();
-        //await InvokeAsync(StateHasChanged);
-        Console.WriteLine("Loaded. Result: " + _serverInformation);
+        if (await MySqlManagerService.IsConnectionPossible())
+        {
+            Console.WriteLine("Loading server version...");
+            _serverInformation = await MySqlManagerService.GetServerVersion();
+            //await InvokeAsync(StateHasChanged);
+            Console.WriteLine("Loaded. Result: " + _serverInformation);
+        }
+        else
+        {
+            _loading = false;
+        }
     }
 
 }

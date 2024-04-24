@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddSingleton<SettingsService>();
 builder.Services.AddScoped<MySqlManagerService>();
 
 var app = builder.Build();
@@ -30,6 +31,9 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+var settingsService = app.Services.GetRequiredService<SettingsService>();
+settingsService.Init();
 
 await app.StartAsync();
 

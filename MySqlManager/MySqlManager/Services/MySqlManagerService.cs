@@ -7,11 +7,30 @@ namespace MySqlManager.Services;
 
 public class MySqlManagerService
 {
-    private const string ConnectionString = "server=localhost;port=30306;user=root;password=root";
-    
-    private static async Task<MySqlConnection> EstablishConnection()
+    private readonly SettingsService _settingsService;
+    //private const string ConnectionString = "server=localhost;port=30306;user=root;password=root";
+
+    public MySqlManagerService(SettingsService settingsService)
     {
-        var conn = new MySqlConnection(ConnectionString);
+        _settingsService = settingsService;
+    }
+
+    public async Task<bool> IsConnectionPossible()
+    {
+        try
+        {
+            await using var conn = await EstablishConnection();
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+    
+    private async Task<MySqlConnection> EstablishConnection()
+    {
+        var conn = new MySqlConnection(_settingsService.Settings.ConnectionString);
         await conn.OpenAsync();
         return conn;
     }

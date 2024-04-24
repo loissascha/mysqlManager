@@ -50,8 +50,11 @@
 
     private async Task LoadDatabaseList()
     {
-        Console.WriteLine("Loading database list...");
-        _databaseList = await MySqlManagerService.GetDatabaseList(false);
+        if (await MySqlManagerService.IsConnectionPossible())
+        {
+            Console.WriteLine("Loading database list...");
+            _databaseList = await MySqlManagerService.GetDatabaseList(false);
+        }
     }
 
 }
