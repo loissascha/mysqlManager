@@ -42,6 +42,22 @@ public class SettingsService
         else
             throw new Exception("Settings file does not exist!");
     }
+
+    private void SaveSettings()
+    {
+        var settingsFilePath = Path.Combine(GetSettingsFolderPath(), "settings.json");
+        var settingsJson = JsonConvert.SerializeObject(Settings);
+        File.WriteAllText(settingsFilePath, settingsJson);
+    }
+
+    public void SetConnectionString(string host, string port, string user, string password)
+    {
+        if (Settings == null)
+            throw new Exception("Settings file is corrupted!");
+        
+        Settings!.ConnectionString = $"server={host};port={port};user={user};password={password};";
+        SaveSettings();
+    }
 }
 
 public class Settings

@@ -5,6 +5,15 @@
 @inject SettingsService SettingsService
 @attribute [StreamRendering]
 
+@if (_errors != null)
+{
+    @foreach (var error in _errors)
+    {
+        <div class="alert alert-danger">@error</div>
+    }
+}
+
+
 @if (_serverInformation != null)
 {
     <div class="card">
@@ -33,21 +42,21 @@ else
             
             <div class="mb-3">
                 <label for="host" class="form-label">Host</label>
-                <input id="host" class="form-control" type="text" required />
+                <input id="host" class="form-control" type="text" @bind="ConfigHost" required />
             </div>
             <div class="mb-3">
                 <label for="port" class="form-label">Port</label>
-                <input id="port" class="form-control" type="text" required />
+                <input id="port" class="form-control" type="text" @bind="ConfigPort" required />
             </div>
             <div class="mb-3">
                 <label for="user" class="form-label">User</label>
-                <input id="user" class="form-control" type="text" required />
+                <input id="user" class="form-control" type="text" @bind="ConfigUser" required />
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
-                <input id="password" class="form-control" type="text" />
+                <input id="password" class="form-control" type="text" @bind="ConfigPassword" />
             </div>
-            <button class="btn btn-primary">Save Configuration</button>
+            <button class="btn btn-primary" @onclick="SaveConfigButton">Save Configuration</button>
         }
         else
         {
@@ -62,10 +71,17 @@ else
 
     private ServerInformationDto? _serverInformation;
     private bool _loading = true;
+    private List<string>? _errors;
+    
+    private string? ConfigHost { get; set; }
+    private string? ConfigPort { get; set; }
+    private string? ConfigUser { get; set; }
+    private string? ConfigPassword { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         _serverInformation = null;
+        _errors = new List<string>();
         await LoadServerVersion();
     }
 
@@ -82,6 +98,29 @@ else
         {
             _loading = false;
         }
+    }
+
+    private void SaveConfigButton()
+    {
+        _errors = new List<string>();
+
+        if (string.IsNullOrEmpty(ConfigHost))
+        {
+            _errors.Add("Host is empty.");
+            return;
+        }
+        if (string.IsNullOrEmpty(ConfigPort))
+        {
+            _errors.Add("Port is empty.");
+            return;
+        }
+        if (string.IsNullOrEmpty(ConfigUser))
+        {
+            _errors.Add("User is empty.");
+            return;
+        }
+        
+        SettingsService.SetConnectionString(ConfigHost, ConfigPort, ConfigUser, ConfigPassword ?? "");
     }
 
 }
