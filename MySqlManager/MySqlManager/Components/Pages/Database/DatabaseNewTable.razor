@@ -4,7 +4,60 @@
 @inject MySqlManagerService MySqlManagerService
 @rendermode InteractiveServer
 
-<h1>New Table</h1>
+<div class="mb-3">
+    <label for="tableName" class="form-label">Table Name</label>
+    <input type="text" class="form-control" id="tableName"/>
+</div>
+<div class="mb-3">
+    <table class="table table-sm table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Length</th>
+            <th>Default</th>
+            <th>Collation</th>
+            <th>Attributes</th>
+            <th>Nullable</th>
+            <th>Index</th>
+            <th>A_I</th>
+            <th>Comments</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><input type="text" class="form-control" /></td>
+            <td>
+                <select class="btselect" data-live-search="true">
+                    <option>INT</option>
+                    <option>VARCHAR</option>
+                    <option>TEXT</option>
+                    <option>DATE</option>
+                    <optgroup label="Numeric">
+                        <option>TINYINT</option>
+                        <option>SMALLINT</option>
+                        <option>MEDIUMINT</option>
+                    </optgroup>
+                </select>
+            </td>
+            <td><input type="text" class="form-control" /></td>
+            <td>
+                <select class="btselect"><option>None</option></select>
+            </td>
+            <td></td>
+            <td></td>
+            <td><input type="checkbox" class="form-check-input" /></td>
+            <td></td>
+            <td><input type="checkbox" class="form-check-input" /></td>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(".btselect").selectpicker();
+</script>
 
 @code {
 
