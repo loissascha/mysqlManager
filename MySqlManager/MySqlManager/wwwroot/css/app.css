@@ -300,6 +300,12 @@ main {
     border-color: var(--color-surface1);
 }
 
+.form-control, .form-control:focus {
+    background-color: var(--color-surface0);
+    color: var(--color-text);
+    border-color: var(--color-surface1);
+}
+
 .btn-primary {
     background-color: var(--color-accent0);
     border-color: var(--color-accent0);
