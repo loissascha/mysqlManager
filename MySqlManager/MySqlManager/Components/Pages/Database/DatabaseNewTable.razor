@@ -1,4 +1,5 @@
 @page "/database/{Database}/new/table"
+@using Microsoft.AspNetCore.Http.Features
 @using MySqlManager.Dtos
 @using MySqlManager.Services
 @inject MySqlManagerService MySqlManagerService
@@ -25,32 +26,37 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td><input type="text" class="form-control" /></td>
-            <td>
-                <select class="btselect" data-live-search="true">
-                    <option>INT</option>
-                    <option>VARCHAR</option>
-                    <option>TEXT</option>
-                    <option>DATE</option>
-                    <optgroup label="Numeric">
-                        <option>TINYINT</option>
-                        <option>SMALLINT</option>
-                        <option>MEDIUMINT</option>
-                    </optgroup>
-                </select>
-            </td>
-            <td><input type="text" class="form-control" /></td>
-            <td>
-                <select class="btselect"><option>None</option></select>
-            </td>
-            <td></td>
-            <td></td>
-            <td><input type="checkbox" class="form-check-input" /></td>
-            <td></td>
-            <td><input type="checkbox" class="form-check-input" /></td>
-            <td></td>
-        </tr>
+        
+        @for (var i = 0; i < _amountCols; i++)
+        {
+            <tr id="col-@($"{i}")">
+                <td><input type="text" class="form-control"/></td>
+                <td>
+                    <select class="btselect" data-live-search="true">
+                        <option>INT</option>
+                        <option>VARCHAR</option>
+                        <option>TEXT</option>
+                        <option>DATE</option>
+                        <optgroup label="Numeric">
+                            <option>TINYINT</option>
+                            <option>SMALLINT</option>
+                            <option>MEDIUMINT</option>
+                        </optgroup>
+                    </select>
+                </td>
+                <td><input type="text" class="form-control"/></td>
+                <td>
+                    <select class="btselect"><option>None</option></select>
+                </td>
+                <td></td>
+                <td></td>
+                <td><input type="checkbox" class="form-check-input"/></td>
+                <td></td>
+                <td><input type="checkbox" class="form-check-input"/></td>
+                <td></td>
+            </tr>
+        }
+        
         </tbody>
     </table>
 </div>
@@ -63,5 +69,11 @@
 
     [Parameter]
     public string? Database { get; set; }
+
+    private int _amountCols = 3;
+    
+    protected override void OnInitialized()
+    {
+    }
 
 }
