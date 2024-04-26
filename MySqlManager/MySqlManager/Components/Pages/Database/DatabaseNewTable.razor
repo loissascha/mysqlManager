@@ -26,13 +26,14 @@
         </tr>
         </thead>
         <tbody>
-        
-        @for (var i = 0; i < _amountCols; i++)
+
+        @foreach (var t in _tableLines)
         {
-            <tr id="col-@($"{i}")">
-                <td><input type="text" class="form-control"/></td>
+            <tr>
+                <td><input type="text" class="form-control newtable-control" @bind="t.Name" /></td>
                 <td>
-                    <select class="btselect" data-live-search="true">
+                    <select class="btselect" data-live-search="true" @bind="t.Type">
+                        <option></option>
                         <option>INT</option>
                         <option>VARCHAR</option>
                         <option>TEXT</option>
@@ -44,21 +45,26 @@
                         </optgroup>
                     </select>
                 </td>
-                <td><input type="text" class="form-control"/></td>
+                <td><input type="text" class="form-control newtable-control" @bind="t.Length" /></td>
                 <td>
-                    <select class="btselect"><option>None</option></select>
+                    <select class="btselect">
+                        <option>None</option>
+                    </select>
                 </td>
                 <td></td>
                 <td></td>
-                <td><input type="checkbox" class="form-check-input"/></td>
+                <td><input type="checkbox" class="form-check-input" @bind="t.Nullable" /></td>
                 <td></td>
-                <td><input type="checkbox" class="form-check-input"/></td>
+                <td><input type="checkbox" class="form-check-input" @bind="t.AutoIncrement" /></td>
                 <td></td>
             </tr>
         }
-        
+
         </tbody>
     </table>
+</div>
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="ConfirmButton">Confirm</button>
 </div>
 
 <script>
@@ -71,9 +77,32 @@
     public string? Database { get; set; }
 
     private int _amountCols = 3;
+    private List<TableLine> _tableLines = new();
     
     protected override void OnInitialized()
     {
+        _tableLines = new List<TableLine>();
+        for (var i = 0; i < _amountCols; i++)
+        {
+            _tableLines.Add(new TableLine());
+        }
+    }
+
+    public void ConfirmButton()
+    {
+        foreach (var t in _tableLines)
+        {
+            Console.WriteLine($"Name: {t.Name} Type: {t.Type}");
+        }
+    }
+
+    public class TableLine
+    {
+        public string? Name { get; set; }
+        public string? Type { get; set; }
+        public string? Length { get; set; }
+        public bool Nullable { get; set; }
+        public bool AutoIncrement { get; set; }
     }
 
 }

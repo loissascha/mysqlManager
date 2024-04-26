@@ -331,3 +331,7 @@ main {
 #toprow {
     padding-left: 0 !important;
 }
+
+.newtable-control {
+    min-width:200px;
+}
