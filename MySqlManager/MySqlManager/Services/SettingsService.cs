@@ -49,6 +49,7 @@ public class SettingsService
 
     private void SaveSettings()
     {
+        Console.WriteLine("Saving Settings...");
         var settingsFilePath = Path.Combine(GetSettingsFolderPath(), "settings.json");
         var settingsJson = JsonConvert.SerializeObject(Settings);
         File.WriteAllText(settingsFilePath, settingsJson);
@@ -79,6 +80,7 @@ public class SettingsService
     {
         Settings!.ConnectionStrings.ForEach(x => x.IsActive = false);
         Settings!.ConnectionStrings[index].IsActive = true;
+        Console.WriteLine("SetConnectionIndexActive. New Active connection string: " + GetActiveConnectionString());
         SaveSettings();
     }
 }

@@ -90,15 +90,10 @@
         get => _activeConnectionIndex;
         set
         {
-            if (_activeConnectionIndex != value)
-            {
-                _activeConnectionIndex = value;
+            if (_activeConnectionIndex == value) return;
+            _activeConnectionIndex = value;
 
-                Task.Run(async () =>
-                {
-                    await OnHostSelectChange();
-                });
-            }
+            OnHostSelectChange();
         }
     }
     
@@ -116,6 +111,7 @@
     {
         _loading = true;
         _serverInformation = null;
+        _addingNewHost = false;
         _errors = new List<string>();
         GetActiveConnectionIndex();
         if (await MySqlManagerService.IsConnectionPossible())
@@ -182,8 +178,9 @@
         }
     }
 
-    private async Task OnHostSelectChange()
+    private async void OnHostSelectChange()
     {
+        Console.WriteLine("OnHostSelectChange");
         SettingsService.SetConnectionIndexActive(ActiveConnectionIndex);
         await LoadServerVersion();
     }
