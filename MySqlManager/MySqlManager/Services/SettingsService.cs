@@ -13,12 +13,16 @@ public class SettingsService
         if (!Directory.Exists(settingsFolderPath))
         {
             Directory.CreateDirectory(settingsFolderPath);
+            
+        }
+        var settingsFilePath = Path.Combine(settingsFolderPath, "settings.json");
+        if (!File.Exists(settingsFilePath))
+        {
             var defaultSettings = new Settings()
             {
-                ConnectionString = ""
+                ConnectionStrings = new List<ConnectionString>()
             };
             var defaultSettingsJson = JsonConvert.SerializeObject(defaultSettings);
-            var settingsFilePath = Path.Combine(settingsFolderPath, "settings.json");
             File.WriteAllText(settingsFilePath, defaultSettingsJson);
         }
         LoadSettings();
@@ -50,19 +54,35 @@ public class SettingsService
         File.WriteAllText(settingsFilePath, settingsJson);
     }
 
-    public void SetConnectionString(string host, string port, string user, string password)
+    public void AddConnectionString(string host, string port, string user, string password)
     {
         if (Settings == null)
             throw new Exception("Settings file is corrupted!");
         
         Console.WriteLine("Setting Connection String and saving Settings...");
         
-        Settings!.ConnectionString = $"server={host};port={port};user={user};password={password};";
+        Settings!.ConnectionStrings.ForEach(x => x.IsActive = false);
+        Settings!.ConnectionStrings.Add(new ConnectionString
+        {
+            ConStr = $"server={host};port={port};user={user};password={password};",
+            IsActive = true
+        });
         SaveSettings();
+    }
+
+    public string GetActiveConnectionString()
+    {
+        return Settings!.ConnectionStrings.Where(x => x.IsActive).Select(x => x.ConStr).FirstOrDefault() ?? "";
     }
 }
 
 public class Settings
 {
-    public required string ConnectionString { get; set; }
+    public required List<ConnectionString> ConnectionStrings { get; set; }
+}
+
+public class ConnectionString
+{
+    public required string ConStr { get; set; }
+    public bool IsActive { get; set; }
 }

@@ -1,9 +1,30 @@
 ﻿@page "/"
+@using System.Text.RegularExpressions
 @using MySqlManager.Services
 @using MySqlManager.Dtos
 @inject MySqlManagerService MySqlManagerService
 @inject SettingsService SettingsService
 @rendermode InteractiveServer
+
+@if (SettingsService.Settings?.ConnectionStrings.Count > 0)
+{
+    <div class="row mt-3 mb-3">
+        <div class="col-6">
+            <select class="form-control">
+                @foreach (var connectionString in SettingsService.Settings.ConnectionStrings)
+                {
+                    var saveString = Regex.Replace(connectionString.ConStr, "password=.*?;", x => "password=****;");
+                    <option>@saveString</option>
+                }
+            </select>
+        </div>
+        <div class="col-6 d-flex justify-content-end">
+            <button class="btn btn-primary" @onclick="ShowAddHostButton">
+                <i class="nf nf-fa-plus"></i> Add Connection
+            </button>
+        </div>
+    </div>
+}
 
 @if (_errors != null)
 {
@@ -13,6 +34,10 @@
     }
 }
 
+@if (_loading)
+{
+    <text>Loading...</text>
+}
 
 @if (_serverInformation != null)
 {
@@ -28,42 +53,26 @@
         </div>
     </div>
 }
-else
+
+@if (_addingNewHost)
 {
-    if (_loading)
-    {
-        <text>Loading...</text>
-    }
-    else
-    {
-        if (string.IsNullOrEmpty(SettingsService.Settings?.ConnectionString))
-        {
-            <div class="alert alert-warning">Please configure your connection string!</div>
-            
-            <div class="mb-3">
-                <label for="host" class="form-label">Host</label>
-                <input id="host" class="form-control" type="text" @bind="ConfigHost" required />
-            </div>
-            <div class="mb-3">
-                <label for="port" class="form-label">Port</label>
-                <input id="port" class="form-control" type="text" @bind="ConfigPort" required />
-            </div>
-            <div class="mb-3">
-                <label for="user" class="form-label">User</label>
-                <input id="user" class="form-control" type="text" @bind="ConfigUser" required />
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input id="password" class="form-control" type="text" @bind="ConfigPassword" />
-            </div>
-            <button class="btn btn-primary" @onclick="SaveConfigButton">Save Configuration</button>
-        }
-        else
-        {
-            // No connection possible -> change settings or something
-            <div class="alert alert-danger">No server connection possible. Please make sure your server is running.</div>
-        }
-    }
+    <div class="mb-3">
+        <label for="host" class="form-label">Host</label>
+        <input id="host" class="form-control" type="text" @bind="ConfigHost" required />
+    </div>
+    <div class="mb-3">
+        <label for="port" class="form-label">Port</label>
+        <input id="port" class="form-control" type="text" @bind="ConfigPort" required />
+    </div>
+    <div class="mb-3">
+        <label for="user" class="form-label">User</label>
+        <input id="user" class="form-control" type="text" @bind="ConfigUser" required />
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input id="password" class="form-control" type="text" @bind="ConfigPassword" />
+    </div>
+    <button class="btn btn-primary" @onclick="AddHostButton">Add Host</button>
 }
 
 
@@ -72,6 +81,7 @@ else
     private ServerInformationDto? _serverInformation;
     private bool _loading = true;
     private List<string>? _errors;
+    private bool _addingNewHost = false;
     
     private string? ConfigHost { get; set; }
     private string? ConfigPort { get; set; }
@@ -87,8 +97,10 @@ else
 
     private async Task LoadServerVersion()
     {
+        _loading = true;
         if (await MySqlManagerService.IsConnectionPossible())
         {
+            _loading = false;
             Console.WriteLine("Loading server version...");
             _serverInformation = await MySqlManagerService.GetServerVersion();
             //await InvokeAsync(StateHasChanged);
@@ -97,10 +109,12 @@ else
         else
         {
             _loading = false;
+            _addingNewHost = true;
+            _errors?.Add("No host found. Please add your first host!");
         }
     }
 
-    private void SaveConfigButton()
+    private async Task AddHostButton()
     {
         Console.WriteLine("SaveConfig Button");
         
@@ -122,7 +136,18 @@ else
             return;
         }
         
-        SettingsService.SetConnectionString(ConfigHost, ConfigPort, ConfigUser, ConfigPassword ?? "");
+        SettingsService.AddConnectionString(ConfigHost, ConfigPort, ConfigUser, ConfigPassword ?? "");
+        ConfigHost = "";
+        ConfigPort = "";
+        ConfigUser = "";
+        ConfigPassword = "";
+        _addingNewHost = false;
+        await LoadServerVersion();
+    }
+
+    private void ShowAddHostButton()
+    {
+        _addingNewHost = true;
     }
 
 }

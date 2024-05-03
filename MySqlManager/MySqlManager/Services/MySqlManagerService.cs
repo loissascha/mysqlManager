@@ -30,7 +30,7 @@ public class MySqlManagerService
     
     private async Task<MySqlConnection> EstablishConnection()
     {
-        var conn = new MySqlConnection(_settingsService.Settings!.ConnectionString);
+        var conn = new MySqlConnection(_settingsService.GetActiveConnectionString());
         await conn.OpenAsync();
         return conn;
     }
