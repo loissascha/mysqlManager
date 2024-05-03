@@ -74,6 +74,13 @@ public class SettingsService
     {
         return Settings!.ConnectionStrings.Where(x => x.IsActive).Select(x => x.ConStr).FirstOrDefault() ?? "";
     }
+
+    public void SetConnectionIndexActive(int index)
+    {
+        Settings!.ConnectionStrings.ForEach(x => x.IsActive = false);
+        Settings!.ConnectionStrings[index].IsActive = true;
+        SaveSettings();
+    }
 }
 
 public class Settings

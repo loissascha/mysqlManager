@@ -10,11 +10,11 @@
 {
     <div class="row mt-3 mb-3">
         <div class="col-6">
-            <select class="form-control">
-                @foreach (var connectionString in SettingsService.Settings.ConnectionStrings)
+            <select class="form-control" @bind="ActiveConnectionIndex">
+                @for (var i = 0; i < SettingsService.Settings.ConnectionStrings.Count; i++)
                 {
-                    var saveString = Regex.Replace(connectionString.ConStr, "password=.*?;", x => "password=****;");
-                    <option>@saveString</option>
+                    var saveString = Regex.Replace(SettingsService.Settings.ConnectionStrings[i].ConStr, "password=.*?;", x => "password=****;");
+                    <option value="@i">@saveString</option>
                 }
             </select>
         </div>
@@ -82,6 +82,25 @@
     private bool _loading = true;
     private List<string>? _errors;
     private bool _addingNewHost = false;
+
+    private int _activeConnectionIndex;
+
+    private int ActiveConnectionIndex
+    {
+        get => _activeConnectionIndex;
+        set
+        {
+            if (_activeConnectionIndex != value)
+            {
+                _activeConnectionIndex = value;
+
+                Task.Run(async () =>
+                {
+                    await OnHostSelectChange();
+                });
+            }
+        }
+    }
     
     private string? ConfigHost { get; set; }
     private string? ConfigPort { get; set; }
@@ -90,14 +109,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _serverInformation = null;
-        _errors = new List<string>();
         await LoadServerVersion();
     }
 
     private async Task LoadServerVersion()
     {
         _loading = true;
+        _serverInformation = null;
+        _errors = new List<string>();
+        GetActiveConnectionIndex();
         if (await MySqlManagerService.IsConnectionPossible())
         {
             _loading = false;
@@ -148,6 +168,24 @@
     private void ShowAddHostButton()
     {
         _addingNewHost = true;
+    }
+
+    private void GetActiveConnectionIndex()
+    {
+        ActiveConnectionIndex = 0;
+        for (var i = 0; i < SettingsService.Settings?.ConnectionStrings.Count; i++)
+        {
+            if (SettingsService.Settings.ConnectionStrings[i].IsActive)
+            {
+                ActiveConnectionIndex = i;
+            }
+        }
+    }
+
+    private async Task OnHostSelectChange()
+    {
+        SettingsService.SetConnectionIndexActive(ActiveConnectionIndex);
+        await LoadServerVersion();
     }
 
 }
