@@ -14,6 +14,7 @@ const createWindow = () => {
         width: 1600,
         height: 1200,
     });
+    win.setMenuBarVisibility(false);
     
     console.log("url is: " + arg1value);
 
