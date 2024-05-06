@@ -5,6 +5,7 @@
 @using MySqlManager.Dtos
 @inject MySqlManagerService MySqlManagerService
 @inject SettingsService SettingsService
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 @if (SettingsService.Settings?.ConnectionStrings.Count > 0)
@@ -104,7 +105,6 @@
     private string? ConfigUser { get; set; }
     private string? ConfigPassword { get; set; }
 
-    // [CascadingParameter] public MainLayout? Layout { get; set; }    
 
     protected override async Task OnInitializedAsync()
     {
@@ -178,8 +178,8 @@
         if (!_allowActiveIndexChange) return;
         Console.WriteLine("OnHostSelectChange");
         SettingsService.SetConnectionIndexActive(ActiveIndex);
-        await LoadServerVersion();
-        // await Layout?.LoadDatabaseList()!;
+        await MySqlManagerService.RefreshDatabaseList();
+        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
     }
 
 }

@@ -12,7 +12,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddSingleton<SettingsService>();
-builder.Services.AddScoped<MySqlManagerService>();
+builder.Services.AddSingleton<MySqlManagerService>();
 
 var app = builder.Build();
 
@@ -34,6 +34,8 @@ app.MapRazorComponents<App>()
 
 var settingsService = app.Services.GetRequiredService<SettingsService>();
 settingsService.Init();
+var mysqlService = app.Services.GetRequiredService<MySqlManagerService>();
+mysqlService.Init();
 
 await app.StartAsync();
 

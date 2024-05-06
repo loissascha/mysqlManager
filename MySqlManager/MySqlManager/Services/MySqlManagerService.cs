@@ -9,10 +9,32 @@ public class MySqlManagerService
 {
     private readonly SettingsService _settingsService;
     //private const string ConnectionString = "server=localhost;port=30306;user=root;password=root";
+    
+    public List<DatabaseInformation> DatabaseList { get; set; }
 
     public MySqlManagerService(SettingsService settingsService)
     {
         _settingsService = settingsService;
+        DatabaseList = new List<DatabaseInformation>();
+    }
+
+    public async void Init()
+    {
+        Console.WriteLine("MySqlManagerService Init...");
+        if (await IsConnectionPossible())
+        {
+            await RefreshDatabaseList();
+        }
+        Console.WriteLine("MySqlManagerService Init done.");
+    }
+
+    public async Task RefreshDatabaseList()
+    {
+        if (await IsConnectionPossible())
+        {
+            Console.WriteLine("MySqlManagerService Connection possible. Getting database list...");
+            DatabaseList = await GetDatabaseList(false);
+        }
     }
 
     public async Task<bool> IsConnectionPossible()
