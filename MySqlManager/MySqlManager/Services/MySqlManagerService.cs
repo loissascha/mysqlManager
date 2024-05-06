@@ -35,6 +35,10 @@ public class MySqlManagerService
             Console.WriteLine("MySqlManagerService Connection possible. Getting database list...");
             DatabaseList = await GetDatabaseList(false);
         }
+        else
+        {
+            DatabaseList = new List<DatabaseInformation>();
+        }
     }
 
     public async Task<bool> IsConnectionPossible()

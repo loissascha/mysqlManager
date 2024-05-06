@@ -335,3 +335,27 @@ main {
 .newtable-control {
     min-width:200px;
 }
+
+/* This will change the scrollbar width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* The background of the scrollbar */
+::-webkit-scrollbar-track {
+    background: var(--color-base);
+}
+
+::-webkit-scrollbar-corner {
+    background: var(--color-base);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: var(--color-mantle);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
