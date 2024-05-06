@@ -1,4 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using MySqlManager.Dtos
+@using MySqlManager.Services
+@inherits LayoutComponentBase
+@inject MySqlManagerService MySqlManagerService
 
 <CascadingValue Value="this">
     <div class="page">
@@ -26,6 +29,13 @@
 
 @code {
     private RenderFragment? TopRow { get; set; }
+    // public List<DatabaseInformation>? DatabaseList { get; set; }
+    
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     DatabaseList = null;
+    //     await LoadDatabaseList();
+    // }
 
     private void SetTopRow(RenderFragment content)
     {
@@ -44,4 +54,14 @@
             </ul>
         </div>);
     }
+    
+    // public async Task LoadDatabaseList()
+    // {
+    //     DatabaseList = null;
+    //     if (await MySqlManagerService.IsConnectionPossible())
+    //     {
+    //         Console.WriteLine("Loading database list...");
+    //         DatabaseList = await MySqlManagerService.GetDatabaseList(false);
+    //     }
+    // }
 }

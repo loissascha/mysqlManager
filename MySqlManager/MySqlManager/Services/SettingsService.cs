@@ -76,9 +76,24 @@ public class SettingsService
         return Settings!.ConnectionStrings.Where(x => x.IsActive).Select(x => x.ConStr).FirstOrDefault() ?? "";
     }
 
+    public int GetActiveConnectionStringIndex()
+    {
+        for (var i = 0; i < Settings!.ConnectionStrings.Count; i++)
+        {
+            if (Settings!.ConnectionStrings[i].IsActive)
+                return i;
+        }
+        return 0;
+    }
+
     public void SetConnectionIndexActive(int index)
     {
-        Settings!.ConnectionStrings.ForEach(x => x.IsActive = false);
+        Console.WriteLine($"Active Connection string 1 : {GetActiveConnectionString()} new one will be index: {index}");
+        foreach (var connectionString in Settings!.ConnectionStrings)
+        {
+            connectionString.IsActive = false;
+        }
+        Console.WriteLine($"Removed active flag. Now: {GetActiveConnectionString()}");
         Settings!.ConnectionStrings[index].IsActive = true;
         Console.WriteLine("SetConnectionIndexActive. New Active connection string: " + GetActiveConnectionString());
         SaveSettings();

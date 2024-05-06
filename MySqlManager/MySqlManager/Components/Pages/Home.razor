@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using System.Text.RegularExpressions
+@using MySqlManager.Components.Layout
 @using MySqlManager.Services
 @using MySqlManager.Dtos
 @inject MySqlManagerService MySqlManagerService
@@ -10,7 +11,7 @@
 {
     <div class="row mt-3 mb-3">
         <div class="col-6">
-            <select class="form-control" @bind="ActiveConnectionIndex">
+            <select class="form-control" @bind="ActiveIndex">
                 @for (var i = 0; i < SettingsService.Settings.ConnectionStrings.Count; i++)
                 {
                     var saveString = Regex.Replace(SettingsService.Settings.ConnectionStrings[i].ConStr, "password=.*?;", x => "password=****;");
@@ -82,10 +83,11 @@
     private bool _loading = true;
     private List<string>? _errors;
     private bool _addingNewHost = false;
+    private bool _allowActiveIndexChange = false;
 
     private int _activeConnectionIndex;
 
-    private int ActiveConnectionIndex
+    private int ActiveIndex
     {
         get => _activeConnectionIndex;
         set
@@ -102,8 +104,13 @@
     private string? ConfigUser { get; set; }
     private string? ConfigPassword { get; set; }
 
+    // [CascadingParameter] public MainLayout? Layout { get; set; }    
+
     protected override async Task OnInitializedAsync()
     {
+        _allowActiveIndexChange = false;
+        ActiveIndex = SettingsService.GetActiveConnectionStringIndex(); 
+        
         await LoadServerVersion();
     }
 
@@ -113,21 +120,21 @@
         _serverInformation = null;
         _addingNewHost = false;
         _errors = new List<string>();
-        GetActiveConnectionIndex();
         if (await MySqlManagerService.IsConnectionPossible())
         {
             _loading = false;
             Console.WriteLine("Loading server version...");
             _serverInformation = await MySqlManagerService.GetServerVersion();
-            //await InvokeAsync(StateHasChanged);
             Console.WriteLine("Loaded. Result: " + _serverInformation);
+            await InvokeAsync(StateHasChanged);
         }
         else
         {
             _loading = false;
             _addingNewHost = true;
-            _errors?.Add("No host found. Please add your first host!");
+            _errors?.Add("No host found or currently selected host not available. Please select a different one or add add a new host!");
         }
+        _allowActiveIndexChange = true;
     }
 
     private async Task AddHostButton()
@@ -166,23 +173,13 @@
         _addingNewHost = true;
     }
 
-    private void GetActiveConnectionIndex()
-    {
-        ActiveConnectionIndex = 0;
-        for (var i = 0; i < SettingsService.Settings?.ConnectionStrings.Count; i++)
-        {
-            if (SettingsService.Settings.ConnectionStrings[i].IsActive)
-            {
-                ActiveConnectionIndex = i;
-            }
-        }
-    }
-
     private async void OnHostSelectChange()
     {
+        if (!_allowActiveIndexChange) return;
         Console.WriteLine("OnHostSelectChange");
-        SettingsService.SetConnectionIndexActive(ActiveConnectionIndex);
+        SettingsService.SetConnectionIndexActive(ActiveIndex);
         await LoadServerVersion();
+        // await Layout?.LoadDatabaseList()!;
     }
 
 }

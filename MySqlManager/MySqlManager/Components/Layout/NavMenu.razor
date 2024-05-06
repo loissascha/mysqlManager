@@ -1,6 +1,7 @@
 ﻿@using MySqlManager.Services
 @using MySqlManager.Dtos
 @inject MySqlManagerService MySqlManagerService
+@rendermode InteractiveServer
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -18,9 +19,9 @@
             </NavLink>
         </div>
         
-        @if (_databaseList != null)
+        @if (DatabaseList != null)
         {
-            foreach (var item in _databaseList)
+            foreach (var item in DatabaseList)
             {
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="@($"/database/{item.Name}")">
@@ -38,26 +39,38 @@
                 </div>                
             }
         }
+        else
+        {
+            <text>Layout null</text>
+        }
     </nav>
 </div>
 
 @code {
 
-    private List<DatabaseInformation>? _databaseList;
+    [CascadingParameter]
+    public MainLayout? Layout { get; set; }
+    
+    public List<DatabaseInformation>? DatabaseList { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
-        _databaseList = null;
+        DatabaseList = null;
         await LoadDatabaseList();
     }
-
-    private async Task LoadDatabaseList()
+    
+    public async Task LoadDatabaseList()
     {
+        DatabaseList = null;
         if (await MySqlManagerService.IsConnectionPossible())
         {
             Console.WriteLine("Loading database list...");
-            _databaseList = await MySqlManagerService.GetDatabaseList(false);
+            DatabaseList = await MySqlManagerService.GetDatabaseList(false);
         }
     }
+    
+    
+
+    
 
 }
