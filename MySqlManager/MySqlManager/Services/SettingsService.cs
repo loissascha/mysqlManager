@@ -62,25 +62,36 @@ public class SettingsService
         
         Console.WriteLine("Setting Connection String and saving Settings...");
         
-        Settings!.ConnectionStrings.ForEach(x => x.IsActive = false);
+        foreach (var connectionString in Settings!.ConnectionStrings)
+        {
+            connectionString.Active = false;
+        }
+        
         Settings!.ConnectionStrings.Add(new ConnectionString
         {
-            ConStr = $"server={host};port={port};user={user};password={password};",
-            IsActive = true
+            // ConStr = $"server={host};port={port};user={user};password={password};",
+            Active = true,
+            Server = host,
+            Port = port,
+            User = user,
+            Password = password
         });
         SaveSettings();
     }
 
     public string GetActiveConnectionString()
     {
-        return Settings!.ConnectionStrings.Where(x => x.IsActive).Select(x => x.ConStr).FirstOrDefault() ?? "";
+        var activeConnectionString = Settings!.ConnectionStrings.FirstOrDefault(x => x.Active);
+        if (activeConnectionString == null) return "";
+        var conStr = $"server={activeConnectionString.Server};port={activeConnectionString.Port};user={activeConnectionString.User};password={activeConnectionString.Password};";
+        return conStr;
     }
 
     public int GetActiveConnectionStringIndex()
     {
         for (var i = 0; i < Settings!.ConnectionStrings.Count; i++)
         {
-            if (Settings!.ConnectionStrings[i].IsActive)
+            if (Settings!.ConnectionStrings[i].Active)
                 return i;
         }
         return 0;
@@ -91,10 +102,10 @@ public class SettingsService
         Console.WriteLine($"Active Connection string 1 : {GetActiveConnectionString()} new one will be index: {index}");
         foreach (var connectionString in Settings!.ConnectionStrings)
         {
-            connectionString.IsActive = false;
+            connectionString.Active = false;
         }
         Console.WriteLine($"Removed active flag. Now: {GetActiveConnectionString()}");
-        Settings!.ConnectionStrings[index].IsActive = true;
+        Settings!.ConnectionStrings[index].Active = true;
         Console.WriteLine("SetConnectionIndexActive. New Active connection string: " + GetActiveConnectionString());
         SaveSettings();
     }
@@ -107,6 +118,9 @@ public class Settings
 
 public class ConnectionString
 {
-    public required string ConStr { get; set; }
-    public bool IsActive { get; set; }
+    public required string Server { get; set; }
+    public string? Port { get; set; }
+    public required string User { get; set; }
+    public required string Password { get; set; }
+    public bool Active { get; set; }
 }
