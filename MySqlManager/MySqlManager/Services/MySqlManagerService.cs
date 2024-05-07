@@ -245,6 +245,21 @@ public class MySqlManagerService
         return result;
     }
 
+    public async Task<List<string>> GetCollations()
+    {
+        await using var conn = await EstablishConnection();
+        await using var cmd = new MySqlCommand("SHOW COLLATION", conn);
+        await using var reader = await cmd.ExecuteReaderAsync();
+        var collations = new List<string>();
+        while (await reader.ReadAsync())
+        {
+            Console.WriteLine($"{reader.GetString(0)}");
+            collations.Add(reader.GetString(0));
+        }
+
+        return collations;
+    }
+
     public async Task<RunSqlResult> RunSql(string? database, string? sql)
     {
         if (string.IsNullOrEmpty(sql))

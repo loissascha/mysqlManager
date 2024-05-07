@@ -52,7 +52,7 @@
             </div>
         </div>
 
-        @if (_connectionPossible)
+        @if (_connectionPossible && _collations.Count > 0)
         {
             <div class="card mt-3 mb-3">
                 <div class="card-header">
@@ -130,6 +130,7 @@
     private bool _addingNewHost = false;
     private bool _allowActiveIndexChange = false;
     private bool _connectionPossible = false;
+    private List<string> _collations = new List<string>();
 
     private int _activeConnectionIndex;
 
@@ -167,6 +168,7 @@
         _addingNewHost = false;
         _connectionPossible = false;
         _errors = new List<string>();
+        _collations = new List<string>();
         if (await MySqlManagerService.IsConnectionPossible())
         {
             Console.WriteLine("Connection is possible!");
@@ -174,6 +176,7 @@
             _loading = false;
             Console.WriteLine("Loading server version...");
             _serverInformation = await MySqlManagerService.GetServerVersion();
+            _collations = await MySqlManagerService.GetCollations();
         }
         else
         {
