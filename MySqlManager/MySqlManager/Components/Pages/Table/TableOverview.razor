@@ -1,4 +1,5 @@
 @page "/database/{Database}/table/{Table}"
+@using System.Data
 @using System.Runtime.InteropServices
 @using MySqlManager.Components.Layout
 @using MySqlManager.Services
@@ -15,34 +16,30 @@ Parameter: @Database / @Table
 }
 else
 {
+    <p class="mt-4">Showing @_tableData.Offset-@(_tableData.Offset + _tableData.Limit) of @_tableData.ResultCount Results</p>
     <div class="table-responsive">
         <table class="table table-sm table-bordered table-striped">
             <thead>
                 <tr>
-                    @foreach (var head in _tableData.ColumnInformation)
+                    @foreach (var column in _tableData.DataTable.Columns)
                     {
-                        <th>@head.Field</th>
+                    <th>@column.ToString()</th>
                     }
                 </tr>
             </thead>
             <tbody>
-                @foreach (var row in _tableData.Content)
+                @foreach (var row in _tableData.DataTable.Rows)
                 {
-                    var i = 0;
-                    <tr>
-                        @foreach (var column in row)
-                        {
-                            if (_tableData.ColumnInformation[i].Key == "PRI")
-                            {
-                                <th>@column</th>
-                            }
-                            else
-                            {
-                                <td>@column</td>
-                            }
-                            i++;
-                        }
-                    </tr>
+                var c = row as DataRow;
+                <tr>
+                    @if (c?.ItemArray != null)
+                    {
+                    foreach (var item in c.ItemArray)
+                    {
+                    <td>@item?.ToString()</td>
+                    }
+                    }
+                </tr>
                 }
             </tbody>
         </table>
@@ -50,7 +47,7 @@ else
 }
 
 @code {
-    private TableData? _tableData;
+    private RunSqlResult? _tableData;
 
     [Parameter] public string? Database { get; set; }
 
@@ -63,7 +60,7 @@ else
         Layout?.SetTopRowForTableView(Database, Table, "browse");
         _tableData = null;
         Console.WriteLine("Getting table contents...");
-        _tableData = await MySqlManagerService.GetTableContents(Database, Table, 0, 30);
+        _tableData = await MySqlManagerService.RunSql(Database, $"SELECT * FROM {Table}");
     }
 
 }

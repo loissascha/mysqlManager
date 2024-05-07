@@ -9,7 +9,8 @@ public class MySqlManagerService
 {
     private readonly SettingsService _settingsService;
     //private const string ConnectionString = "server=localhost;port=30306;user=root;password=root";
-    
+
+    public event Action OnDatabaseListChanged;
     public List<DatabaseInformation> DatabaseList { get; set; }
 
     public MySqlManagerService(SettingsService settingsService)
@@ -39,6 +40,8 @@ public class MySqlManagerService
         {
             DatabaseList = new List<DatabaseInformation>();
         }
+        Console.WriteLine("Invoke Database List Changed.");
+        OnDatabaseListChanged?.Invoke();
     }
 
     public async Task<bool> IsConnectionPossible()
@@ -59,43 +62,6 @@ public class MySqlManagerService
         var conn = new MySqlConnection(_settingsService.GetActiveConnectionString());
         await conn.OpenAsync();
         return conn;
-    }
-
-    public async Task<TableData> GetTableContents(string? databaseName, string? tableName, int offset = 0, int limit = 0)
-    {
-        if (string.IsNullOrEmpty(databaseName) || string.IsNullOrEmpty(tableName))
-        {
-            throw new ArgumentException("Database name and table name must be provided");
-        }
-        
-        var tableColumnInformation = await GetTableColumnInfos(databaseName, tableName);
-        
-        var result = new TableData
-        {
-            ColumnInformation = tableColumnInformation,
-            Content = new List<List<string?>>()
-        };
-        
-        var fieldsCount = tableColumnInformation.Count;
-        
-        var limits = limit > 0 ? $"LIMIT {offset}, {limit}" : "";
-        
-        await using var conn = await EstablishConnection();
-        await using var cmd = new MySqlCommand($"USE {databaseName}; SELECT * FROM {tableName} {limits}", conn);
-        await using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            var row = new List<string?>();
-            for (var i = 0; i < fieldsCount; i++)
-            {
-                var columnValue = reader.GetValue(i).ToString();
-                row.Add(columnValue);
-                //Console.WriteLine($"{tableColumnInformation[i].Field}: {columnValue}");
-            }
-            result.Content.Add(row);
-        }
-
-        return result;
     }
 
     private async Task<List<TableColumnInformation>> GetTableColumnInfos(string? databaseName, string? tableName)

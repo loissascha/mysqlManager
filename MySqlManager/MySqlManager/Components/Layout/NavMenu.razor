@@ -1,7 +1,9 @@
 ﻿@using MySqlManager.Services
 @using MySqlManager.Dtos
+@implements IDisposable
 @inject MySqlManagerService MySqlManagerService
-@attribute [StreamRendering]
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -19,9 +21,9 @@
             </NavLink>
         </div>
         
-        @if (MySqlManagerService.DatabaseList.Count > 0)
+        @if (_databaseInformations.Count > 0)
         {
-            foreach (var item in MySqlManagerService.DatabaseList)
+            foreach (var item in _databaseInformations)
             {
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="@($"/database/{item.Name}")">
@@ -45,29 +47,23 @@
 
 @code {
 
-    // [CascadingParameter]
-    // public MainLayout? Layout { get; set; }
+    private List<DatabaseInformation> _databaseInformations = new List<DatabaseInformation>();
     
-    // public List<DatabaseInformation>? DatabaseList { get; set; }
-    
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     DatabaseList = null;
-    //     await LoadDatabaseList();
-    // }
-    //
-    // public async Task LoadDatabaseList()
-    // {
-    //     DatabaseList = null;
-    //     if (await MySqlManagerService.IsConnectionPossible())
-    //     {
-    //         Console.WriteLine("Loading database list...");
-    //         DatabaseList = await MySqlManagerService.GetDatabaseList(false);
-    //     }
-    // }
-    
-    
+    protected override void OnInitialized()
+    {
+        _databaseInformations = MySqlManagerService.DatabaseList;
+        MySqlManagerService.OnDatabaseListChanged += RefreshUi;
+    }
 
+    public void Dispose()
+    {
+        MySqlManagerService.OnDatabaseListChanged -= RefreshUi;
+    }
     
-
+    private async void RefreshUi()
+    {
+        _databaseInformations = MySqlManagerService.DatabaseList;
+        Console.WriteLine("NavMenu received Database List Change");
+        await InvokeAsync(StateHasChanged);
+    }
 }

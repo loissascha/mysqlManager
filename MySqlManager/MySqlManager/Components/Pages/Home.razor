@@ -165,7 +165,6 @@
         ConfigUser = "";
         ConfigPassword = "";
         _addingNewHost = false;
-        await LoadServerVersion();
     }
 
     private void ShowAddHostButton()
@@ -178,8 +177,9 @@
         if (!_allowActiveIndexChange) return;
         Console.WriteLine("OnHostSelectChange");
         SettingsService.SetConnectionIndexActive(ActiveIndex);
+        await LoadServerVersion();
         await MySqlManagerService.RefreshDatabaseList();
-        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+        // NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
     }
 
 }
