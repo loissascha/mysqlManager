@@ -29,6 +29,12 @@ public class MySqlManagerService
         Console.WriteLine("MySqlManagerService Init done.");
     }
 
+    public void ResetDatabaseList()
+    {
+        DatabaseList = new List<DatabaseInformation>();
+        OnDatabaseListChanged?.Invoke();
+    }
+
     public async Task RefreshDatabaseList()
     {
         if (await IsConnectionPossible())

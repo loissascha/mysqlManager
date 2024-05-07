@@ -36,46 +36,83 @@
     }
 }
 
-@if (_loading)
-{
-    <text>Loading...</text>
-}
+<div class="row">
 
-@if (_serverInformation != null)
-{
-    <div class="card">
-        <div class="card-header">
-            <i class="nf nf-cod-server"></i> Server Information
+    <div class="col-6">
+        
+        <div class="card mt-3 mb-3">
+            <div class="card-header">
+                Appearance settings
+            </div>
+            <div class="card-body">
+                Theme
+            </div>
         </div>
-        <div class="card-body">
-            Server Type: @_serverInformation.ServerType<br/>
-            Version: @_serverInformation.Version <br/>
-            Protocol Version: @_serverInformation.ProtocolVersion <br/>
-            OS: @_serverInformation.VersionCompileOs
-        </div>
-    </div>
-}
 
-@if (_addingNewHost)
-{
-    <div class="mb-3">
-        <label for="host" class="form-label">Host</label>
-        <input id="host" class="form-control" type="text" @bind="ConfigHost" required />
+        @if (_connectionPossible)
+        {
+            <div class="card mt-3 mb-3">
+                <div class="card-header">
+                    <i class="nf nf-fa-plus"></i> New Database
+                </div>
+                <div class="card-body">
+
+                </div>
+            </div>
+        }
+
+        @if (_addingNewHost)
+        {
+            <div class="card mt-3 mb-3">
+                <div class="card-header">
+                    Add Host
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="host" class="form-label">Host</label>
+                        <input id="host" class="form-control" type="text" @bind="ConfigHost" required/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="port" class="form-label">Port</label>
+                        <input id="port" class="form-control" type="text" @bind="ConfigPort" required/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="user" class="form-label">User</label>
+                        <input id="user" class="form-control" type="text" @bind="ConfigUser" required/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input id="password" class="form-control" type="text" @bind="ConfigPassword"/>
+                    </div>
+                    <button class="btn btn-primary" @onclick="AddHostButton">Add Host</button>
+                </div>
+            </div>
+        }
+        
     </div>
-    <div class="mb-3">
-        <label for="port" class="form-label">Port</label>
-        <input id="port" class="form-control" type="text" @bind="ConfigPort" required />
+    
+    <div class="col-6">
+        
+        @if (_serverInformation != null)
+        {
+
+            <div class="card mt-3 mb-3">
+                <div class="card-header">
+                    <i class="nf nf-cod-server"></i> Server Information
+                </div>
+                <div class="card-body">
+                    Server Type: @_serverInformation.ServerType<br/>
+                    Version: @_serverInformation.Version <br/>
+                    Protocol Version: @_serverInformation.ProtocolVersion <br/>
+                    OS: @_serverInformation.VersionCompileOs
+                </div>
+            </div>
+        }
+        
     </div>
-    <div class="mb-3">
-        <label for="user" class="form-label">User</label>
-        <input id="user" class="form-control" type="text" @bind="ConfigUser" required />
-    </div>
-    <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input id="password" class="form-control" type="text" @bind="ConfigPassword" />
-    </div>
-    <button class="btn btn-primary" @onclick="AddHostButton">Add Host</button>
-}
+</div>
+
+
 
 
 @code {
@@ -85,6 +122,7 @@
     private List<string>? _errors;
     private bool _addingNewHost = false;
     private bool _allowActiveIndexChange = false;
+    private bool _connectionPossible = false;
 
     private int _activeConnectionIndex;
 
@@ -120,10 +158,12 @@
         _loading = true;
         _serverInformation = null;
         _addingNewHost = false;
+        _connectionPossible = false;
         _errors = new List<string>();
         if (await MySqlManagerService.IsConnectionPossible())
         {
             Console.WriteLine("Connection is possible!");
+            _connectionPossible = true;
             _loading = false;
             Console.WriteLine("Loading server version...");
             _serverInformation = await MySqlManagerService.GetServerVersion();
@@ -179,6 +219,7 @@
         if (!_allowActiveIndexChange) return;
         Console.WriteLine("OnHostSelectChange");
         SettingsService.SetConnectionIndexActive(ActiveIndex);
+        MySqlManagerService.ResetDatabaseList();
         await LoadServerVersion();
         await MySqlManagerService.RefreshDatabaseList();
         // NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
