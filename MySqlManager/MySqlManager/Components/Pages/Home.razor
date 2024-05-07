@@ -21,9 +21,12 @@
             </select>
         </div>
         <div class="col-6 d-flex justify-content-end">
-            <button class="btn btn-primary" @onclick="ShowAddHostButton">
-                <i class="nf nf-fa-plus"></i> Add Connection
-            </button>
+            @if (!_addingNewHost)
+            {
+                <button class="btn btn-primary" @onclick="ShowAddHostButton">
+                    <i class="nf nf-fa-plus"></i> Add Host
+                </button>
+            }
         </div>
     </div>
 }
@@ -85,6 +88,10 @@
                         <input id="password" class="form-control" type="text" @bind="ConfigPassword"/>
                     </div>
                     <button class="btn btn-primary" @onclick="AddHostButton">Add Host</button>
+                    @if (_connectionPossible)
+                    {
+                        <button class="btn btn-secondary ms-3" @onclick="CancelHostButton">Cancel</button>
+                    }
                 </div>
             </div>
         }
@@ -202,6 +209,15 @@
         }
         
         SettingsService.AddConnectionString(ConfigHost, ConfigPort, ConfigUser, ConfigPassword ?? "");
+        ConfigHost = "";
+        ConfigPort = "";
+        ConfigUser = "";
+        ConfigPassword = "";
+        _addingNewHost = false;
+    }
+
+    private void CancelHostButton()
+    {
         ConfigHost = "";
         ConfigPort = "";
         ConfigUser = "";
