@@ -3,7 +3,7 @@
 @using MySqlManager.Components.Layout
 @using MySqlManager.Dtos
 @using MySqlManager.Services
-@inject MySqlManagerService MySqlManagerService
+@inject SqlCommandService SqlCommandService
 @rendermode InteractiveServer
 
 <h1>SQL</h1>
@@ -78,7 +78,7 @@ Parameter: @Database / @Table
         try
         {
             //await Task.Delay(65000);
-            _runSqlResult = await MySqlManagerService.RunSql(Database, string.IsNullOrEmpty(SqlAreaContent) ? "" : SqlAreaContent);
+            _runSqlResult = await SqlCommandService.RunSql(Database, string.IsNullOrEmpty(SqlAreaContent) ? "" : SqlAreaContent);
         }
         catch (Exception exception)
         {

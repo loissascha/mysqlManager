@@ -12,6 +12,10 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddSingleton<SettingsService>();
+builder.Services.AddSingleton<DatabaseConnectionService>();
+builder.Services.AddSingleton<DatabaseInformationService>();
+builder.Services.AddSingleton<TableInformationService>();
+builder.Services.AddSingleton<SqlCommandService>();
 builder.Services.AddSingleton<MySqlManagerService>();
 
 var app = builder.Build();

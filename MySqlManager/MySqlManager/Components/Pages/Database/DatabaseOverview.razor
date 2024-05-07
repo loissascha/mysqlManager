@@ -1,7 +1,7 @@
 @page "/database/{Database}"
 @using MySqlManager.Dtos
 @using MySqlManager.Services
-@inject MySqlManagerService MySqlManagerService
+@inject TableInformationService TableInformationService
 @attribute [StreamRendering]
 
 
@@ -84,6 +84,6 @@ else
         if (Database == "information_schema") return;
         _loading = true;
         Console.WriteLine("Loading table list...");
-        _tableList = await MySqlManagerService.GetTableList(Database, true);
+        _tableList = await TableInformationService.GetTableList(Database, true);
     }
 }

@@ -1,7 +1,7 @@
 ﻿@using MySqlManager.Services
 @using MySqlManager.Dtos
 @implements IDisposable
-@inject MySqlManagerService MySqlManagerService
+@inject DatabaseInformationService DatabaseInformationService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
@@ -51,18 +51,18 @@
     
     protected override void OnInitialized()
     {
-        _databaseInformations = MySqlManagerService.DatabaseList;
-        MySqlManagerService.OnDatabaseListChanged += RefreshUi;
+        _databaseInformations = DatabaseInformationService.DatabaseList;
+        DatabaseInformationService.OnDatabaseListChanged += RefreshUi;
     }
 
     public void Dispose()
     {
-        MySqlManagerService.OnDatabaseListChanged -= RefreshUi;
+        DatabaseInformationService.OnDatabaseListChanged -= RefreshUi;
     }
     
     private async void RefreshUi()
     {
-        _databaseInformations = MySqlManagerService.DatabaseList;
+        _databaseInformations = DatabaseInformationService.DatabaseList;
         Console.WriteLine("NavMenu received Database List Change");
         await InvokeAsync(StateHasChanged);
     }

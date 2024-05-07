@@ -1,11 +1,10 @@
 ﻿@page "/"
 @using System.Text.RegularExpressions
-@using MySqlManager.Components.Layout
 @using MySqlManager.Services
 @using MySqlManager.Dtos
-@inject MySqlManagerService MySqlManagerService
+@inject DatabaseConnectionService DatabaseConnectionService
+@inject DatabaseInformationService DatabaseInformationService
 @inject SettingsService SettingsService
-@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 @if (SettingsService.Settings?.ConnectionStrings.Count > 0)
@@ -169,14 +168,14 @@
         _connectionPossible = false;
         _errors = new List<string>();
         _collations = new List<string>();
-        if (await MySqlManagerService.IsConnectionPossible())
+        if (await DatabaseConnectionService.IsConnectionPossible())
         {
             Console.WriteLine("Connection is possible!");
             _connectionPossible = true;
             _loading = false;
             Console.WriteLine("Loading server version...");
-            _serverInformation = await MySqlManagerService.GetServerVersion();
-            _collations = await MySqlManagerService.GetCollations();
+            _serverInformation = await DatabaseInformationService.GetServerVersion();
+            _collations = await DatabaseInformationService.GetCollations();
         }
         else
         {
@@ -238,9 +237,9 @@
         if (!_allowActiveIndexChange) return;
         Console.WriteLine("OnHostSelectChange");
         SettingsService.SetConnectionIndexActive(ActiveIndex);
-        MySqlManagerService.ResetDatabaseList();
+        DatabaseInformationService.ResetDatabaseList();
         await LoadServerVersion();
-        await MySqlManagerService.RefreshDatabaseList();
+        await DatabaseInformationService.RefreshDatabaseList();
         // NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
     }
 

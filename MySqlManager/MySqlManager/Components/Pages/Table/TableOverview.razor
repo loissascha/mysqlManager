@@ -4,7 +4,7 @@
 @using MySqlManager.Components.Layout
 @using MySqlManager.Services
 @using MySqlManager.Dtos
-@inject MySqlManagerService MySqlManagerService
+@inject SqlCommandService SqlCommandService
 @attribute [StreamRendering]
 
 <h1>Database Overview</h1>
@@ -60,7 +60,7 @@ else
         Layout?.SetTopRowForTableView(Database, Table, "browse");
         _tableData = null;
         Console.WriteLine("Getting table contents...");
-        _tableData = await MySqlManagerService.RunSql(Database, $"SELECT * FROM {Table}");
+        _tableData = await SqlCommandService.RunSql(Database, $"SELECT * FROM {Table}");
     }
 
 }
