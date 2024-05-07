@@ -14,7 +14,8 @@
             <select class="form-control" @bind="ActiveIndex">
                 @for (var i = 0; i < SettingsService.Settings.ConnectionStrings.Count; i++)
                 {
-                    var saveString = Regex.Replace(SettingsService.Settings.ConnectionStrings[i].ConStr, "password=.*?;", x => "password=****;");
+                    //var saveString = Regex.Replace(SettingsService.Settings.ConnectionStrings[i].ConStr, "password=.*?;", x => "password=****;");
+                    var saveString = $"server={SettingsService.Settings.ConnectionStrings[i].Server};port={SettingsService.Settings.ConnectionStrings[i].Port};user={SettingsService.Settings.ConnectionStrings[i].User};";
                     <option value="@i">@saveString</option>
                 }
             </select>
