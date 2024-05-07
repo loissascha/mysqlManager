@@ -110,7 +110,7 @@ public class DatabaseInformationService(DatabaseConnectionService _databaseConne
         var collations = new List<string>();
         while (await reader.ReadAsync())
         {
-            Console.WriteLine($"{reader.GetString(0)}");
+            // Console.WriteLine($"{reader.GetString(0)}");
             collations.Add(reader.GetString(0));
         }
 
