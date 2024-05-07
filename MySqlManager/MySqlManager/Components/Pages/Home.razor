@@ -154,8 +154,8 @@
     protected override async Task OnInitializedAsync()
     {
         _allowActiveIndexChange = false;
-        ActiveIndex = SettingsService.GetActiveConnectionStringIndex(); 
-        
+        ActiveIndex = SettingsService.GetActiveConnectionStringIndex();
+
         await LoadServerVersion();
     }
 
@@ -168,6 +168,12 @@
         _connectionPossible = false;
         _errors = new List<string>();
         _collations = new List<string>();
+        
+        if (!MySqlDumpService.IsCommandAvailable())
+        {
+            _errors.Add("mysqldump command is not available. If you want to backup databasese this command has to be installed.");
+        }
+        
         if (await DatabaseConnectionService.IsConnectionPossible())
         {
             Console.WriteLine("Connection is possible!");

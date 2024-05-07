@@ -8,6 +8,11 @@
 <h1>Database Overview</h1>
 Parameter: @Database
 
+@if (MySqlDumpService.IsCommandAvailable())
+{
+    <div class="mt-3 mb-3"><button class="btn btn-primary" @onclick="DumpDatabaseButton">Dump Database</button></div>
+}
+
 @if (_tableList == null)
 {
     if (_loading)
@@ -85,5 +90,10 @@ else
         _loading = true;
         Console.WriteLine("Loading table list...");
         _tableList = await TableInformationService.GetTableList(Database, true);
+    }
+
+    private void DumpDatabaseButton()
+    {
+        //MySqlDumpService.DumpDatabase();
     }
 }

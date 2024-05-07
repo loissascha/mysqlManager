@@ -28,7 +28,7 @@ public class SettingsService
         LoadSettings();
     }
 
-    private string GetSettingsFolderPath()
+    public static string GetSettingsFolderPath()
     {
         return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "loisMySqlManager");
     }
