@@ -277,16 +277,17 @@ public class MySqlManagerService
             {
                 resultCount = -1;
             }
+            
+            // add limit if there is none
+            if (!sql.Contains("limit", StringComparison.CurrentCultureIgnoreCase))
+            {
+                sql += " LIMIT 0, 300";
+                result.Offset = 0;
+                result.Limit = 300;
+            }
         }
         result.ResultCount = resultCount;
 
-        // add limit if there is none
-        if (!sql.Contains("limit", StringComparison.CurrentCultureIgnoreCase))
-        {
-            sql += " LIMIT 0, 300";
-            result.Offset = 0;
-            result.Limit = 300;
-        }
         
         Console.WriteLine($"RunSQL: {sql}");
         
