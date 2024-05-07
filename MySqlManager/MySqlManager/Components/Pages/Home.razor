@@ -116,24 +116,26 @@
 
     private async Task LoadServerVersion()
     {
+        Console.WriteLine("Load server version...");
         _loading = true;
         _serverInformation = null;
         _addingNewHost = false;
         _errors = new List<string>();
         if (await MySqlManagerService.IsConnectionPossible())
         {
+            Console.WriteLine("Connection is possible!");
             _loading = false;
             Console.WriteLine("Loading server version...");
             _serverInformation = await MySqlManagerService.GetServerVersion();
-            Console.WriteLine("Loaded. Result: " + _serverInformation);
-            await InvokeAsync(StateHasChanged);
         }
         else
         {
+            Console.WriteLine("Connection not possible -.-");
             _loading = false;
             _addingNewHost = true;
             _errors?.Add("No host found or currently selected host not available. Please select a different one or add add a new host!");
         }
+        await InvokeAsync(StateHasChanged);
         _allowActiveIndexChange = true;
     }
 
