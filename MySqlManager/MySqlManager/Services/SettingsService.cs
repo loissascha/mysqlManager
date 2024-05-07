@@ -20,7 +20,7 @@ public class SettingsService
         {
             var defaultSettings = new Settings()
             {
-                ConnectionStrings = new List<ConnectionString>()
+                ConnectionStrings = new List<ConnectionSetting>()
             };
             var defaultSettingsJson = JsonConvert.SerializeObject(defaultSettings);
             File.WriteAllText(settingsFilePath, defaultSettingsJson);
@@ -67,7 +67,7 @@ public class SettingsService
             connectionString.Active = false;
         }
         
-        Settings!.ConnectionStrings.Add(new ConnectionString
+        Settings!.ConnectionStrings.Add(new ConnectionSetting
         {
             // ConStr = $"server={host};port={port};user={user};password={password};",
             Active = true,
@@ -77,6 +77,19 @@ public class SettingsService
             Password = password
         });
         SaveSettings();
+    }
+
+    public ConnectionSetting? GetActiveConnectionSetting()
+    {
+        foreach (var connectionSetting in Settings!.ConnectionStrings)
+        {
+            if (connectionSetting.Active)
+            {
+                return connectionSetting;
+            }
+        }
+
+        return null;
     }
 
     public string GetActiveConnectionString()
@@ -113,10 +126,10 @@ public class SettingsService
 
 public class Settings
 {
-    public required List<ConnectionString> ConnectionStrings { get; set; }
+    public required List<ConnectionSetting> ConnectionStrings { get; set; }
 }
 
-public class ConnectionString
+public class ConnectionSetting
 {
     public required string Server { get; set; }
     public string? Port { get; set; }
