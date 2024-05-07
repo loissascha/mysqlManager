@@ -2,11 +2,21 @@
 @using MySqlManager.Dtos
 @using MySqlManager.Services
 @inject TableInformationService TableInformationService
-@attribute [StreamRendering]
+@inject SettingsService SettingsService
+@rendermode InteractiveServer
 
 
 <h1>Database Overview</h1>
 Parameter: @Database
+
+@if (_dumpingDatabase)
+{
+    <div class="alert alert-warning">Duming database...</div>
+}
+@if (_dumpingDatabaseFinished)
+{
+    <div class="alert alert-success">Database dumped!</div>
+}
 
 @if (MySqlDumpService.IsCommandAvailable())
 {
@@ -68,6 +78,8 @@ else
 @code {
     private List<TableInformation>? _tableList;
     private bool _loading;
+    private bool _dumpingDatabase;
+    private bool _dumpingDatabaseFinished;
 
     [Parameter]
     public string? Database { get; set; }
@@ -77,6 +89,8 @@ else
     {
         _tableList = null;
         _loading = false;
+        _dumpingDatabase = false;
+        _dumpingDatabaseFinished = false;
         await LoadTableList();
     }
 
@@ -94,6 +108,13 @@ else
 
     private void DumpDatabaseButton()
     {
-        //MySqlDumpService.DumpDatabase();
+        Console.WriteLine("Dumping database...");
+        _dumpingDatabase = true;
+        var setting = SettingsService.GetActiveConnectionSetting();
+        if (setting == null) return;
+        MySqlDumpService.DumpDatabase(setting.Server, setting.Port, setting.User, setting.Password, Database);
+        _dumpingDatabase = false;
+        _dumpingDatabaseFinished = true;
+        Console.WriteLine("DumpDatabase");
     }
 }
