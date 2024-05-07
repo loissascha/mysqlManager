@@ -336,6 +336,11 @@ main {
     min-width:200px;
 }
 
+.table a {
+    color: var(--color-text);
+    text-decoration: none;
+}
+
 /* This will change the scrollbar width */
 ::-webkit-scrollbar {
     width: 10px;
