@@ -264,7 +264,9 @@ public class MySqlManagerService
         await using var conn = await EstablishConnection();
         
         // if its a select query -> get the actual count for pagination
-        var resultCount = 0;
+        var resultCount = -1;
+        result.Offset = -1;
+        result.Limit = -1;
         if (sql.StartsWith("select", StringComparison.CurrentCultureIgnoreCase))
         {
             try
@@ -298,6 +300,13 @@ public class MySqlManagerService
         await dataReader.CloseAsync();
 
         result.DataTable = dataTable;
+        result.ResultCount = dataTable.Rows.Count;
+
+        if (result.Offset == -1)
+        {
+            result.Offset = 0;
+            result.Limit = dataTable.Rows.Count;
+        }
 
         return result;
     }
