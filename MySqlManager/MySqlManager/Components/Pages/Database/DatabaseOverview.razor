@@ -88,8 +88,6 @@ else
     [Parameter]
     public string? Database { get; set; }
     
-    [CascadingParameter] public MainLayout? Layout { get; set; }
-
     
     protected override async Task OnInitializedAsync()
     {
@@ -97,10 +95,6 @@ else
         _loading = true;
         _dumpingDatabase = false;
         _dumpingDatabaseFinished = false;
-        if (Layout == null)
-        {
-            Console.WriteLine("[ERROR]: Layout is null");
-        }
         TopRowService.SetTopRowForDatabaseView(Database, "overview");
         await Task.Delay(5);
         await LoadTableList();
