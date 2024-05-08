@@ -1,9 +1,8 @@
 @page "/database/{Database}/table/{Table}/insert"
-@using System.Runtime.InteropServices
-@using MySqlManager.Components.Layout
 @using MySqlManager.Services
-@using MySqlManager.Dtos
-@rendermode @(new InteractiveServerRenderMode(prerender: true))
+@implements IDisposable
+@inject TopRowService TopRowService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [StreamRendering]
 
 <h1>Insert</h1>
@@ -15,11 +14,14 @@ Parameter: @Database / @Table
 
     [Parameter] public string? Table { get; set; }
     
-    [CascadingParameter] public MainLayout? Layout { get; set; }
-    
     protected override void OnInitialized()
     {
-        Layout?.SetTopRowForTableView(Database, Table, "insert");
+        TopRowService.SetTopRowForTableView(Database, Table, "insert");
+    }
+    
+    public void Dispose()
+    {
+        TopRowService.ClearTopRow();
     }
 
 }

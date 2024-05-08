@@ -1,0 +1,27 @@
+@using MySqlManager.Services
+@using MySqlManager.Dtos
+@implements IDisposable
+@inject TopRowService TopRowService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@attribute [StreamRendering]
+
+@TopRowService.TopRow
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        TopRowService.OnTopRowChanged += OnTopRowChanged;
+    }
+
+    private async void OnTopRowChanged()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        TopRowService.OnTopRowChanged -= OnTopRowChanged;
+    }
+    
+}
