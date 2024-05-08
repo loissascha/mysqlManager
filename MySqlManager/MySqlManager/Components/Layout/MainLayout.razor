@@ -2,6 +2,7 @@
 @using MySqlManager.Services
 @inherits LayoutComponentBase
 @inject MySqlManagerService MySqlManagerService
+@attribute [StreamRendering]
 
 <CascadingValue Value="this">
     <div class="page">
@@ -29,13 +30,6 @@
 
 @code {
     private RenderFragment? TopRow { get; set; }
-    // public List<DatabaseInformation>? DatabaseList { get; set; }
-    
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     DatabaseList = null;
-    //     await LoadDatabaseList();
-    // }
 
     private void SetTopRow(RenderFragment content)
     {
@@ -54,14 +48,15 @@
             </ul>
         </div>);
     }
-    
-    // public async Task LoadDatabaseList()
-    // {
-    //     DatabaseList = null;
-    //     if (await MySqlManagerService.IsConnectionPossible())
-    //     {
-    //         Console.WriteLine("Loading database list...");
-    //         DatabaseList = await MySqlManagerService.GetDatabaseList(false);
-    //     }
-    // }
+
+    public void SetTopRowForDatabaseView(string? database, string? active = null)
+    {
+        Console.WriteLine("SetTopRowForDatabaseView");
+        SetTopRow(@<div class="container-fluid">
+            <ul class="list-unstyled d-flex flex-row align-items-center">
+              <li class=""><a class="btn btn-primary ms-0 me-2 mt-3 @(active == "overview" ? "active" : "")" href="@($"/database/{database}")">Overview</a></li>
+              <li class=""><a class="btn btn-primary me-2 mt-3 @(active == "import" ? "active" : "")" href="@($"/database/{database}/import")">Import</a></li>
+            </ul>
+        </div>);
+    }
 }

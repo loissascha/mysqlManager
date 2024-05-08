@@ -1,9 +1,10 @@
 @page "/database/{Database}"
+@using MySqlManager.Components.Layout
 @using MySqlManager.Dtos
 @using MySqlManager.Services
 @inject TableInformationService TableInformationService
 @inject SettingsService SettingsService
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@rendermode @(new InteractiveServerRenderMode(prerender: true))
 @attribute [StreamRendering]
 
 
@@ -84,6 +85,8 @@ else
 
     [Parameter]
     public string? Database { get; set; }
+    
+    [CascadingParameter] public MainLayout? Layout { get; set; }
 
     
     protected override async Task OnInitializedAsync()
@@ -92,6 +95,11 @@ else
         _loading = true;
         _dumpingDatabase = false;
         _dumpingDatabaseFinished = false;
+        if (Layout == null)
+        {
+            Console.WriteLine("[ERROR]: Layout is null");
+        }
+        Layout?.SetTopRowForDatabaseView(Database, "overview");
         await Task.Delay(5);
         await LoadTableList();
     }

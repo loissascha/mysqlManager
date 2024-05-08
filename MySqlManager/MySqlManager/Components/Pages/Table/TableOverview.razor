@@ -5,7 +5,7 @@
 @using MySqlManager.Services
 @using MySqlManager.Dtos
 @inject SqlCommandService SqlCommandService
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@rendermode @(new InteractiveServerRenderMode(prerender: true))
 @attribute [StreamRendering]
 
 <h1>Database Overview</h1>

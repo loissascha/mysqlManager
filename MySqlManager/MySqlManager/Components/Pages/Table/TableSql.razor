@@ -4,7 +4,7 @@
 @using MySqlManager.Dtos
 @using MySqlManager.Services
 @inject SqlCommandService SqlCommandService
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@rendermode @(new InteractiveServerRenderMode(prerender: true))
 
 <h1>SQL</h1>
 Parameter: @Database / @Table
