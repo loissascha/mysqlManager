@@ -5,7 +5,7 @@
 @inject DatabaseConnectionService DatabaseConnectionService
 @inject DatabaseInformationService DatabaseInformationService
 @inject SettingsService SettingsService
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @if (SettingsService.Settings?.ConnectionStrings.Count > 0)
 {
