@@ -13,6 +13,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddServerSideBlazor();
 
 builder.Services.AddSingleton<SettingsService>();
+builder.Services.AddSingleton<TopRowService>();
 builder.Services.AddSingleton<DatabaseConnectionService>();
 builder.Services.AddSingleton<DatabaseInformationService>();
 builder.Services.AddSingleton<TableInformationService>();
