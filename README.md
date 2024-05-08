@@ -7,4 +7,5 @@ This project aims to create a simple to use, powerful tool to access your mysql 
 
 ![Alt text](/readme/tableOverview.png?raw=true "Table Overview")
 
-This project is licensed under the terms of the MIT license.
+## License
+See the [LICENSE](LICENSE.md) file for more information.
