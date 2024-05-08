@@ -3,7 +3,7 @@
 @using MySqlManager.Services
 @inject TableInformationService TableInformationService
 @inject SettingsService SettingsService
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [StreamRendering]
 
 
