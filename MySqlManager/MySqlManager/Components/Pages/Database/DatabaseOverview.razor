@@ -2,9 +2,11 @@
 @using MySqlManager.Components.Layout
 @using MySqlManager.Dtos
 @using MySqlManager.Services
+@implements IDisposable
 @inject TableInformationService TableInformationService
 @inject SettingsService SettingsService
-@rendermode @(new InteractiveServerRenderMode(prerender: true))
+@inject TopRowService TopRowService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [StreamRendering]
 
 
@@ -99,9 +101,14 @@ else
         {
             Console.WriteLine("[ERROR]: Layout is null");
         }
-        Layout?.SetTopRowForDatabaseView(Database, "overview");
+        TopRowService.SetTopRowForDatabaseView(Database, "overview");
         await Task.Delay(5);
         await LoadTableList();
+    }
+
+    public void Dispose()
+    {
+        TopRowService.ClearTopRow();
     }
 
     private async Task LoadTableList()

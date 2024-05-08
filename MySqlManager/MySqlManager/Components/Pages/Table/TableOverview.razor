@@ -1,11 +1,11 @@
 @page "/database/{Database}/table/{Table}"
 @using System.Data
-@using System.Runtime.InteropServices
-@using MySqlManager.Components.Layout
 @using MySqlManager.Services
 @using MySqlManager.Dtos
+@implements IDisposable
 @inject SqlCommandService SqlCommandService
-@rendermode @(new InteractiveServerRenderMode(prerender: true))
+@inject TopRowService TopRowService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [StreamRendering]
 
 <h1>Database Overview</h1>
@@ -54,14 +54,17 @@ else
 
     [Parameter] public string? Table { get; set; }
     
-    [CascadingParameter] public MainLayout? Layout { get; set; }
-
     protected override async Task OnInitializedAsync()
     {
-        Layout?.SetTopRowForTableView(Database, Table, "browse");
+        TopRowService.SetTopRowForTableView(Database, Table, "browse");
         _tableData = null;
         Console.WriteLine("Getting table contents...");
         _tableData = await SqlCommandService.RunSql(Database, $"SELECT * FROM {Table}");
+    }
+    
+    public void Dispose()
+    {
+        TopRowService.ClearTopRow();
     }
 
 }

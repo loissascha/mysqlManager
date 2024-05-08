@@ -1,10 +1,11 @@
 @page "/database/{Database}/table/{Table}/sql"
 @using System.Data
-@using MySqlManager.Components.Layout
 @using MySqlManager.Dtos
 @using MySqlManager.Services
+@implements IDisposable
 @inject SqlCommandService SqlCommandService
-@rendermode @(new InteractiveServerRenderMode(prerender: true))
+@inject TopRowService TopRowService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <h1>SQL</h1>
 Parameter: @Database / @Table
@@ -55,8 +56,6 @@ Parameter: @Database / @Table
 
     [Parameter] public string? Table { get; set; }
 
-    [CascadingParameter] public MainLayout? Layout { get; set; }
-
     private string? SqlAreaContent { get; set; }
 
     private RunSqlResult? _runSqlResult;
@@ -66,7 +65,12 @@ Parameter: @Database / @Table
     protected override void OnInitialized()
     {
         _runSqlResult = null;
-        Layout?.SetTopRowForTableView(Database, Table, "sql");
+        TopRowService.SetTopRowForTableView(Database, Table, "sql");
+    }
+    
+    public void Dispose()
+    {
+        TopRowService.ClearTopRow();
     }
 
     private async Task PressGo()

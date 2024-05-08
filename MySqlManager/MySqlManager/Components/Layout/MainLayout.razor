@@ -1,7 +1,4 @@
-﻿@using MySqlManager.Dtos
-@using MySqlManager.Services
-@inherits LayoutComponentBase
-@inject MySqlManagerService MySqlManagerService
+﻿@inherits LayoutComponentBase
 @attribute [StreamRendering]
 
 <CascadingValue Value="this">
@@ -12,7 +9,7 @@
 
         <main>
             <div class="top-row px-0 ps-0" id="toprow">
-                @TopRow
+                <TopRow />
             </div>
 
             <article class="content px-4">
@@ -29,34 +26,5 @@
 </div>
 
 @code {
-    private RenderFragment? TopRow { get; set; }
-
-    private void SetTopRow(RenderFragment content)
-    {
-        TopRow = content;
-        StateHasChanged();
-    }
-
-    public void SetTopRowForTableView(string? database, string? table, string? active = null)
-    {
-        SetTopRow(@<div class="container-fluid">
-            <ul class="list-unstyled d-flex flex-row align-items-center">
-                <li class=""><a class="btn btn-primary ms-0 me-2 mt-3 @(active == "browse" ? "active" : "")" href="@($"/database/{database}/table/{table}")">Browse</a></li>
-                <li class=""><a class="btn btn-primary me-2 mt-3 @(active == "sql" ? "active" : "")" href="@($"/database/{database}/table/{table}/sql")">SQL</a></li>
-                <li class=""><a class="btn btn-primary me-2 mt-3 @(active == "search" ? "active" : "")" href="@($"/database/{database}/table/{table}/search")">Search</a></li>
-                <li class=""><a class="btn btn-primary mt-3 @(active == "insert" ? "active" : "")" href="@($"/database/{database}/table/{table}/insert")">Insert</a></li>
-            </ul>
-        </div>);
-    }
-
-    public void SetTopRowForDatabaseView(string? database, string? active = null)
-    {
-        Console.WriteLine("SetTopRowForDatabaseView");
-        SetTopRow(@<div class="container-fluid">
-            <ul class="list-unstyled d-flex flex-row align-items-center">
-              <li class=""><a class="btn btn-primary ms-0 me-2 mt-3 @(active == "overview" ? "active" : "")" href="@($"/database/{database}")">Overview</a></li>
-              <li class=""><a class="btn btn-primary me-2 mt-3 @(active == "import" ? "active" : "")" href="@($"/database/{database}/import")">Import</a></li>
-            </ul>
-        </div>);
-    }
+    
 }

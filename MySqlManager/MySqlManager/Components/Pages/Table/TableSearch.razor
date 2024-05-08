@@ -1,10 +1,8 @@
 @page "/database/{Database}/table/{Table}/search"
-@using System.Runtime.InteropServices
-@using MySqlManager.Components.Layout
 @using MySqlManager.Services
-@using MySqlManager.Dtos
-@inject MySqlManagerService MySqlManagerService
-@rendermode @(new InteractiveServerRenderMode(prerender: true))
+@implements IDisposable
+@inject TopRowService TopRowService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [StreamRendering]
 
 <h1>Search</h1>
@@ -16,11 +14,15 @@ Parameter: @Database / @Table
 
     [Parameter] public string? Table { get; set; }
     
-    [CascadingParameter] public MainLayout? Layout { get; set; }
     
     protected override void OnInitialized()
     {
-        Layout?.SetTopRowForTableView(Database, Table, "search");
+        TopRowService.SetTopRowForTableView(Database, Table, "search");
+    }
+    
+    public void Dispose()
+    {
+        TopRowService.ClearTopRow();
     }
 
 }
