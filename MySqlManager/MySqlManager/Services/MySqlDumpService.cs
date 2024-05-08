@@ -30,6 +30,11 @@ public abstract class MySqlDumpService
     {
         var settingsPath = SettingsService.GetSettingsFolderPath();
         var filepath = Path.Combine(settingsPath, "dump_" + database + ".sql");
+
+        if (File.Exists(filepath))
+        {
+            File.Delete(filepath);
+        }
         
         using Process process = new Process();
         process.StartInfo.FileName = "mysqldump";

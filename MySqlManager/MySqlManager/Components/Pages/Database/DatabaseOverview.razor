@@ -4,6 +4,7 @@
 @inject TableInformationService TableInformationService
 @inject SettingsService SettingsService
 @rendermode InteractiveServer
+@attribute [StreamRendering]
 
 
 <h1>Database Overview</h1>
@@ -88,9 +89,10 @@ else
     protected override async Task OnInitializedAsync()
     {
         _tableList = null;
-        _loading = false;
+        _loading = true;
         _dumpingDatabase = false;
         _dumpingDatabaseFinished = false;
+        await Task.Delay(5);
         await LoadTableList();
     }
 
@@ -101,18 +103,20 @@ else
         if (Database == "sys") return;
         if (Database == "performance_schema") return;
         if (Database == "information_schema") return;
-        _loading = true;
         Console.WriteLine("Loading table list...");
         _tableList = await TableInformationService.GetTableList(Database, true);
+        _loading = false;
     }
 
-    private void DumpDatabaseButton()
+    private async Task DumpDatabaseButton()
     {
         Console.WriteLine("Dumping database...");
         _dumpingDatabase = true;
         var setting = SettingsService.GetActiveConnectionSetting();
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(5);
         if (setting == null) return;
-        MySqlDumpService.DumpDatabase(setting.Server, setting.Port, setting.User, setting.Password, Database);
+        MySqlDumpService.DumpDatabase(setting.Server, setting.Port!, setting.User, setting.Password, Database!);
         _dumpingDatabase = false;
         _dumpingDatabaseFinished = true;
         Console.WriteLine("DumpDatabase");
