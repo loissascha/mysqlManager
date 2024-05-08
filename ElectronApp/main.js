@@ -12,7 +12,7 @@ const createWindow = () => {
 
     const win = new BrowserWindow({
         width: 1600,
-        height: 1200,
+        height: 900,
     });
     win.setMenuBarVisibility(false);
     
