@@ -1,0 +1,18 @@
+@page "/database/{Database}/import"
+@using MySqlManager.Services
+@inject TopRowService TopRowService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<h3>Import</h3>
+
+@code {
+
+    [Parameter]
+    public string? Database { get; set; }
+
+    protected override void OnInitialized()
+    {
+        TopRowService.SetTopRowForDatabaseView(Database, "import");
+    }
+
+}

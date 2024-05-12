@@ -101,6 +101,16 @@ public class TopRowService
             _builder.AddContent(++seq, "Import");
             _builder.CloseElement();
             _builder.CloseElement();
+            
+            // "Export" link
+            _builder.OpenElement(++seq, "li");
+            _builder.OpenElement(++seq, "a");
+            var hrefValueExport = $"/database/{database}/export";
+            _builder.AddAttribute(++seq, "class", $"btn btn-primary me-2 mt-3 {(active == "export" ? "active" : "")}");
+            _builder.AddAttribute(++seq, "href", hrefValueExport);
+            _builder.AddContent(++seq, "Export");
+            _builder.CloseElement();
+            _builder.CloseElement();
 
             _builder.CloseElement(); // ul
             _builder.CloseElement(); // div

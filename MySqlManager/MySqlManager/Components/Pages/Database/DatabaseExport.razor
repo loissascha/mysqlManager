@@ -1,0 +1,53 @@
+@page "/database/{Database}/export"
+@using MySqlManager.Services
+@inject SettingsService SettingsService
+@inject TopRowService TopRowService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<h3>Export</h3>
+
+@if (_dumpingDatabase)
+{
+<div class="alert alert-warning">Duming database...</div>
+}
+@if (_dumpingDatabaseFinished)
+{
+<div class="alert alert-success">Database dumped!</div>
+}
+
+@if (MySqlDumpService.IsCommandAvailable())
+{
+<div class="mt-3 mb-3"><button class="btn btn-primary" @onclick="DumpDatabaseButton">Dump Database</button></div>
+}
+
+
+@code {
+
+    [Parameter]
+    public string? Database { get; set; }
+    
+    private bool _dumpingDatabase;
+    private bool _dumpingDatabaseFinished;
+
+    protected override void OnInitialized()
+    {
+        TopRowService.SetTopRowForDatabaseView(Database, "export");
+        _dumpingDatabase = false;
+        _dumpingDatabaseFinished = false;
+    }
+    
+    private async Task DumpDatabaseButton()
+    {
+        Console.WriteLine("Dumping database...");
+        _dumpingDatabase = true;
+        var setting = SettingsService.GetActiveConnectionSetting();
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(5);
+        if (setting == null) return;
+        MySqlDumpService.DumpDatabase(setting.Server, setting.Port!, setting.User, setting.Password, Database!);
+        _dumpingDatabase = false;
+        _dumpingDatabaseFinished = true;
+        Console.WriteLine("DumpDatabase");
+    }
+
+}

@@ -13,20 +13,6 @@
 <h1>Database Overview</h1>
 Parameter: @Database
 
-@if (_dumpingDatabase)
-{
-    <div class="alert alert-warning">Duming database...</div>
-}
-@if (_dumpingDatabaseFinished)
-{
-    <div class="alert alert-success">Database dumped!</div>
-}
-
-@if (MySqlDumpService.IsCommandAvailable())
-{
-    <div class="mt-3 mb-3"><button class="btn btn-primary" @onclick="DumpDatabaseButton">Dump Database</button></div>
-}
-
 @if (_tableList == null)
 {
     if (_loading)
@@ -82,8 +68,7 @@ else
 @code {
     private List<TableInformation>? _tableList;
     private bool _loading;
-    private bool _dumpingDatabase;
-    private bool _dumpingDatabaseFinished;
+    
 
     [Parameter]
     public string? Database { get; set; }
@@ -93,8 +78,6 @@ else
     {
         _tableList = null;
         _loading = true;
-        _dumpingDatabase = false;
-        _dumpingDatabaseFinished = false;
         TopRowService.SetTopRowForDatabaseView(Database, "overview");
         await Task.Delay(5);
         await LoadTableList();
@@ -117,17 +100,5 @@ else
         _loading = false;
     }
 
-    private async Task DumpDatabaseButton()
-    {
-        Console.WriteLine("Dumping database...");
-        _dumpingDatabase = true;
-        var setting = SettingsService.GetActiveConnectionSetting();
-        await InvokeAsync(StateHasChanged);
-        await Task.Delay(5);
-        if (setting == null) return;
-        MySqlDumpService.DumpDatabase(setting.Server, setting.Port!, setting.User, setting.Password, Database!);
-        _dumpingDatabase = false;
-        _dumpingDatabaseFinished = true;
-        Console.WriteLine("DumpDatabase");
-    }
+    
 }
