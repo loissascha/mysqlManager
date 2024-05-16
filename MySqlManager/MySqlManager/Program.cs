@@ -14,11 +14,13 @@ builder.Services.AddServerSideBlazor();
 
 builder.Services.AddSingleton<SettingsService>();
 builder.Services.AddSingleton<TopRowService>();
+builder.Services.AddSingleton<OverlayService>();
 builder.Services.AddSingleton<DatabaseConnectionService>();
 builder.Services.AddSingleton<DatabaseInformationService>();
 builder.Services.AddSingleton<TableInformationService>();
 builder.Services.AddSingleton<SqlCommandService>();
 builder.Services.AddSingleton<MySqlManagerService>();
+builder.Services.AddSingleton<TruncateService>();
 
 var app = builder.Build();
 

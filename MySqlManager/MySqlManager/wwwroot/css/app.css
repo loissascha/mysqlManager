@@ -364,3 +364,27 @@ main {
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+.overlay {
+    position: fixed;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    background:rgba(0,0,0,0.4);
+    z-index:1000000;
+}
+
+.overlay > .card-container {
+    width:100%;
+    height:100%;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-items: center;
+}
+
+.overlay > .card-container > .card {
+    margin-left:auto;
+    margin-right:auto;
+}

@@ -1,0 +1,38 @@
+@using MySqlManager.Services
+@implements IDisposable
+@inject OverlayService OverlayService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@attribute [StreamRendering]
+
+@if (OverlayService.OverlayVisible)
+{
+    <div class="overlay">
+        <div class="card-container">
+            <div class="card">
+                <div class="card-header">@OverlayService.OverlayHeader</div>
+                <div class="card-body">
+                    @OverlayService.OverlayBody
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code  {
+
+    protected override void OnInitialized()
+    {
+        OverlayService.OnOverlayChanged += OnOvlerayChanged;
+    }
+
+    private async void OnOvlerayChanged()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        OverlayService.OnOverlayChanged -= OnOvlerayChanged;
+    }
+
+}

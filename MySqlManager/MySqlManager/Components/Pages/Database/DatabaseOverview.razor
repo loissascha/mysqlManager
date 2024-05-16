@@ -6,6 +6,7 @@
 @inject TableInformationService TableInformationService
 @inject SettingsService SettingsService
 @inject TopRowService TopRowService
+@inject OverlayService OverlayService
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [StreamRendering]
 
@@ -31,6 +32,7 @@ else
                 <th>Engine</th>
                 <th>Collation</th>
                 <th>Size</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -58,12 +60,14 @@ else
                             <text>@sizeInMb.ToString("F1") MB</text>
                         }
                     </td>
+                    <td><a style="cursor:pointer;" @onclick="@(e => { TruncateTable(table.Name);})">Truncate</a></td>
                 </tr>
             }
             </tbody>
         </table>
     </div>
 }
+
 
 @code {
     private List<TableInformation>? _tableList;
@@ -98,6 +102,17 @@ else
         Console.WriteLine("Loading table list...");
         _tableList = await TableInformationService.GetTableList(Database, true);
         _loading = false;
+    }
+
+    private void TruncateTable(string? tableName)
+    {
+        Console.WriteLine("Truncate Table: " + tableName);
+        OverlayService.SetOverlay("Truncate " + tableName, _builder =>
+        {
+            var seq = -1;
+            _builder.AddContent(++seq, "Do you really want to truncate this table?");
+        });
+        OverlayService.ShowOverlay();
     }
 
     
