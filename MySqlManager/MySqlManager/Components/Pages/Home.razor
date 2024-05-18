@@ -5,6 +5,7 @@
 @inject DatabaseConnectionService DatabaseConnectionService
 @inject DatabaseInformationService DatabaseInformationService
 @inject SettingsService SettingsService
+@inject MySqlManagerService MySqlManagerService
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @if (SettingsService.Settings?.ConnectionStrings.Count > 0)
@@ -59,7 +60,14 @@
                     <i class="nf nf-fa-plus"></i> New Database
                 </div>
                 <div class="card-body">
-
+                    <select class="form-control" @bind="_newDatabaseCollation">
+                        @foreach (var collation in _collations)
+                        {
+                            <option>@collation</option>
+                        }
+                    </select>
+                    <input type="text" class="form-control" @bind="_newDatabaseName" />
+                    <button class="btn btn-primary" @onclick="CreateDatabaseButton">Create Database</button>
                 </div>
             </div>
         }
@@ -150,6 +158,9 @@
     private string? ConfigPort { get; set; }
     private string? ConfigUser { get; set; }
     private string? ConfigPassword { get; set; }
+    
+    private string? _newDatabaseName { get; set; }
+    private string? _newDatabaseCollation { get; set; }
 
 
     protected override async Task OnInitializedAsync()
@@ -248,6 +259,17 @@
         await LoadServerVersion();
         await DatabaseInformationService.RefreshDatabaseList();
         // NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+    }
+
+    private async Task CreateDatabaseButton()
+    {
+        Console.WriteLine($"Creating new database {_newDatabaseName} with collation: {_newDatabaseCollation}");
+        if (_newDatabaseName == null || _newDatabaseCollation == null) return;
+        
+        await MySqlManagerService.CreateDatabase(_newDatabaseName, _newDatabaseCollation);
+        await DatabaseInformationService.RefreshDatabaseList();
+
+        _newDatabaseName = "";
     }
 
 }
