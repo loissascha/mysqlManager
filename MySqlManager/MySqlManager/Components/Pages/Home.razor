@@ -49,7 +49,12 @@
                 Appearance settings
             </div>
             <div class="card-body">
-                Theme
+                <div class="d-flex flex-row">
+                    <div class="p-2 pe-3">Theme</div>
+                    <select class="form-control">
+                        <option>Catppuccin Mocha</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -61,13 +66,14 @@
                 </div>
                 <div class="card-body">
                     <select class="form-control" @bind="_newDatabaseCollation">
+                        <option disabled>SELECT COLLATION</option>
                         @foreach (var collation in _collations)
                         {
                             <option>@collation</option>
                         }
                     </select>
-                    <input type="text" class="form-control" @bind="_newDatabaseName" />
-                    <button class="btn btn-primary" @onclick="CreateDatabaseButton">Create Database</button>
+                    <input type="text" class="form-control mt-1" @bind="_newDatabaseName" placeholder="Database name" />
+                    <button class="btn btn-primary mt-1" @onclick="CreateDatabaseButton">Create Database</button>
                 </div>
             </div>
         }
@@ -265,6 +271,7 @@
     {
         Console.WriteLine($"Creating new database {_newDatabaseName} with collation: {_newDatabaseCollation}");
         if (_newDatabaseName == null || _newDatabaseCollation == null) return;
+        if (_newDatabaseCollation == "SELECT COLLATION") return;
         
         await MySqlManagerService.CreateDatabase(_newDatabaseName, _newDatabaseCollation);
         await DatabaseInformationService.RefreshDatabaseList();
