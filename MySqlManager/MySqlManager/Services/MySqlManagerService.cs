@@ -41,6 +41,8 @@ public class MySqlManagerService(
 
         foreach (var row in tableRows)
         {
+            if (string.IsNullOrEmpty(row.Name?.Trim()) || string.IsNullOrEmpty(row.Type?.Trim())) continue;
+            
             var columnDef = $"{row.Name} {row.Type}";
             if (!string.IsNullOrEmpty(row.Length?.Trim()))
             {
