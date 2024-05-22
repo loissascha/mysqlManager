@@ -27,6 +27,7 @@
             <th>Nullable</th>
             <th>Index</th>
             <th>A_I</th>
+            <th>Primary Key</th>
             <th>Comments</th>
         </tr>
         </thead>
@@ -54,8 +55,8 @@
                 </td>
                 <td><input type="text" class="form-control newtable-control" @bind="t.Length" /></td>
                 <td>
-                    <select class="btselect">
-                        <option>None</option>
+                    <select class="btselect" @bind="t.Default">
+                        <option value="">None</option>
                     </select>
                 </td>
                 <td></td>
@@ -63,6 +64,7 @@
                 <td><input type="checkbox" class="form-check-input" @bind="t.Nullable" /></td>
                 <td></td>
                 <td><input type="checkbox" class="form-check-input" @bind="t.AutoIncrement" /></td>
+                <td><input type="checkbox" class="form-check-input" @bind="t.PrimaryKey" /></td>
                 <td></td>
             </tr>
         }
@@ -109,14 +111,18 @@
         }
     }
 
-    private void ConfirmButton()
+    private async Task ConfirmButton()
     {
+        if (Database == null) return;
+        
         Console.WriteLine($"Creating Table {_tableName}...");
         foreach (var t in _tableLines)
         {
             if (string.IsNullOrEmpty(t.Name) || string.IsNullOrEmpty(t.Type)) continue;
-            Console.WriteLine($"Name: {t.Name} Type: {t.Type}");
+            Console.WriteLine($"Name: {t.Name} Type: {t.Type} Length: {t.Length} Default: {t.Default} Nullable: {t.Nullable} AI: {t.AutoIncrement} PK: {t.PrimaryKey}");
         }
+
+        await MySqlManagerService.CreateTable(Database, _tableName, _tableLines);
     }
 
     private async Task AddLine()

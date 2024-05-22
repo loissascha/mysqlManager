@@ -109,57 +109,5 @@ public class TableInformationService(DatabaseConnectionService _databaseConnecti
         return result;
     }
 
-    public async Task CreateTable(string database, string tableName, List<NewTableRow> tableRows)
-    {
-        await using var conn = await _databaseConnectionService.EstablishConnection();
-        var sb = new StringBuilder($"CREATE TABLE {database}.{tableName} (");
-        var primaryKey = "";
-
-        foreach (var row in tableRows)
-        {
-            var columnDef = $"{row.Name} {row.Type}";
-            if (!string.IsNullOrEmpty(row.Length?.Trim()))
-            {
-                columnDef += $"({row.Length})";
-            }
-            
-            if (!row.Nullable)
-            {
-                columnDef += " NOT NULL";
-            }
-            
-            if(row.AutoIncrement)
-            {
-                columnDef += " AUTO_INCREMENT";
-            }
-
-            if (!string.IsNullOrEmpty(row.Default?.Trim()))
-            {
-                columnDef += $" DEFAULT '{row.Default}'";
-            }
-
-            sb.Append(columnDef + ",");
-            
-            if (row.PrimaryKey)
-            {
-                primaryKey += $"{row.Name},";
-            }
-        }
-        
-        if (!string.IsNullOrEmpty(primaryKey))
-        {
-            // removes trailing comma
-            primaryKey = primaryKey.Remove(primaryKey.Length - 1);
-            sb.Append($" PRIMARY KEY ({primaryKey})");
-        }
-        else // removes trailing comma
-        {
-            sb.Length--;
-        }
-
-        sb.Append(");");
-
-        await using var cmd = new MySqlCommand(sb.ToString(), conn);
-        await cmd.ExecuteNonQueryAsync();
-    }
+    
 }
