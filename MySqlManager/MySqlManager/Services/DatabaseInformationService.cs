@@ -116,4 +116,16 @@ public class DatabaseInformationService(DatabaseConnectionService _databaseConne
 
         return collations;
     }
+
+    public async Task<string> GetServerCollation()
+    {
+        await using var conn = await _databaseConnectionService.EstablishConnection();
+        await using var cmd = new MySqlCommand("SHOW VARIABLES LIKE 'collation_server'", conn);
+        await using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            return reader.GetString(1);
+        }
+        return "";
+    }
 }

@@ -200,6 +200,7 @@
             Console.WriteLine("Loading server version...");
             _serverInformation = await DatabaseInformationService.GetServerVersion();
             _collations = await DatabaseInformationService.GetCollations();
+            _newDatabaseCollation = await DatabaseInformationService.GetServerCollation();
         }
         else
         {
