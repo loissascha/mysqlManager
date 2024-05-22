@@ -3,6 +3,7 @@
 @using MySqlManager.Dtos
 @using MySqlManager.Services
 @inject MySqlManagerService MySqlManagerService
+@inject DatabaseInformationService DatabaseInformationService
 @inject IJSRuntime JSRuntime
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
@@ -104,6 +105,11 @@
     
     protected override void OnInitialized()
     {
+        ResetView();
+    }
+
+    private void ResetView()
+    {
         _tableLines = new List<NewTableRow>();
         for (var i = 0; i < AmountStartCols; i++)
         {
@@ -123,6 +129,8 @@
         }
 
         await MySqlManagerService.CreateTable(Database, _tableName, _tableLines);
+        await DatabaseInformationService.RefreshDatabaseList();
+        ResetView();
     }
 
     private async Task AddLine()
