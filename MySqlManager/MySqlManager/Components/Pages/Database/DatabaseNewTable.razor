@@ -47,6 +47,8 @@
                             <option>TINYINT</option>
                             <option>SMALLINT</option>
                             <option>MEDIUMINT</option>
+                            <option>FLOAT</option>
+                            <option>DECIMAL</option>
                         </optgroup>
                     </select>
                 </td>
@@ -73,14 +75,18 @@
 </div>
 
 <script>
-    $(".btselect").selectpicker();
-    
+    $(".btselect").selectpicker({
+        style: "btn-secondary bt-selectpicker"
+    });
+
     var newTable = newTable || {};
     newTable.updatedLines = function (dotnetObject) {
         dotnetObject.invokeMethodAsync("UpdatedLines");
     };
     newTable.updateSelectpicker = function (dotnetObject) {
-        $(".btselect").selectpicker();
+        $(".btselect").selectpicker({
+            style: "btn-secondary bt-selectpicker"
+        });
     };
 </script>
 
@@ -90,30 +96,32 @@
     public string? Database { get; set; }
 
     private const int AmountStartCols = 3;
-    private List<TableLine> _tableLines = new();
+    private List<NewTableRow> _tableLines = new();
 
     private string _tableName = "";
     
     protected override void OnInitialized()
     {
-        _tableLines = new List<TableLine>();
+        _tableLines = new List<NewTableRow>();
         for (var i = 0; i < AmountStartCols; i++)
         {
-            _tableLines.Add(new TableLine());
+            _tableLines.Add(new NewTableRow());
         }
     }
 
     private void ConfirmButton()
     {
+        Console.WriteLine($"Creating Table {_tableName}...");
         foreach (var t in _tableLines)
         {
+            if (string.IsNullOrEmpty(t.Name) || string.IsNullOrEmpty(t.Type)) continue;
             Console.WriteLine($"Name: {t.Name} Type: {t.Type}");
         }
     }
 
     private async Task AddLine()
     {
-        _tableLines.Add(new TableLine());
+        _tableLines.Add(new NewTableRow());
         await InvokeAsync(StateHasChanged);
         var dotnetReference = DotNetObjectReference.Create(this);
         await JSRuntime.InvokeVoidAsync("newTable.updatedLines", dotnetReference);
@@ -134,15 +142,6 @@
     {
         var dotnetReference = DotNetObjectReference.Create(this);
         await JSRuntime.InvokeVoidAsync("newTable.updateSelectpicker", dotnetReference);
-    }
-
-    public class TableLine
-    {
-        public string? Name { get; set; }
-        public string? Type { get; set; }
-        public string? Length { get; set; }
-        public bool Nullable { get; set; }
-        public bool AutoIncrement { get; set; }
     }
 
 }
