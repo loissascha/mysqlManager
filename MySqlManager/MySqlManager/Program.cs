@@ -22,6 +22,9 @@ builder.Services.AddSingleton<SqlCommandService>();
 builder.Services.AddSingleton<MySqlManagerService>();
 builder.Services.AddSingleton<TruncateService>();
 
+var freePort = Electron.GetAvailablePort(5000);
+builder.WebHost.UseUrls($"http://localhost:{freePort}");
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

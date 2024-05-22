@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 
 namespace MySqlManager;
@@ -68,5 +70,25 @@ public class Electron
             });
             if (stopTimer) return;
         }
+    }
+    
+    public static int GetAvailablePort(int startingPort)
+    {
+        var portArray = new List<int>();
+        for (var i = startingPort; i < startingPort + 100; i++)
+        {
+            portArray.Add(i);
+        }
+
+        IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+        IPEndPoint[] endPoints = ipGlobalProperties.GetActiveTcpListeners();
+
+        foreach (var endPoint in endPoints)
+        {
+            if (portArray.Contains(endPoint.Port))
+                portArray.Remove(endPoint.Port);
+        }
+
+        return portArray.First();
     }
 }
