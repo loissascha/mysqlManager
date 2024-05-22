@@ -6,7 +6,7 @@ namespace MySqlManager.Services;
 
 public class TableInformationService(DatabaseConnectionService _databaseConnectionService)
 {
-    private async Task<List<TableColumnInformation>> GetTableColumnInfos(string? databaseName, string? tableName)
+    public async Task<List<TableColumnInformation>> GetTableColumnInfos(string? databaseName, string? tableName)
     {
         if (string.IsNullOrEmpty(databaseName) || string.IsNullOrEmpty(tableName))
         {

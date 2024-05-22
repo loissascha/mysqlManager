@@ -1,0 +1,69 @@
+@page "/database/{Database}/table/{Table}/information"
+@using MySqlManager.Dtos
+@using MySqlManager.Services
+@implements IDisposable
+@inject TopRowService TopRowService
+@inject TableInformationService TableInformationService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@attribute [StreamRendering]
+
+<h1>Information</h1>
+Parameter: @Database / @Table
+
+<div class="table-responsive">
+    <table class="table table-sm table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Null</th>
+            <th>key</th>
+            <th>Default</th>
+            <th>Extra</th>
+            <th>ReferencedTableName</th>
+            <th>ReferencedColumnName</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var row in _columnInformations)
+        {
+            <tr>
+                <td>@row.Field</td>
+                <td>@row.Type</td>
+                <td>@row.Null</td>
+                <td>@row.Key</td>
+                <td>@row.Default</td>
+                <td>@row.Extra</td>
+                <td>@row.ReferencedTableName</td>
+                <td>@row.ReferencedColumnName</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+@code {
+
+    [Parameter] public string? Database { get; set; }
+
+    [Parameter] public string? Table { get; set; }
+
+    private List<TableColumnInformation> _columnInformations = new List<TableColumnInformation>();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        TopRowService.SetTopRowForTableView(Database, Table, "information");
+        await GetTableColumnsInfo();
+    }
+    
+    public void Dispose()
+    {
+        TopRowService.ClearTopRow();
+    }
+
+    private async Task GetTableColumnsInfo()
+    {
+        _columnInformations = await TableInformationService.GetTableColumnInfos(Database, Table);
+    }
+
+}

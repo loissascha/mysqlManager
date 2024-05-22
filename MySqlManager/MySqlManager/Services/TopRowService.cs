@@ -35,6 +35,16 @@ public class TopRowService
             _builder.CloseElement();
             _builder.CloseElement();
             
+            // "Information" link
+            _builder.OpenElement(++seq, "li");
+            _builder.OpenElement(++seq, "a");
+            var hrefValueInformation = $"/database/{database}/table/{table}/information";
+            _builder.AddAttribute(++seq, "class", $"btn btn-primary ms-0 me-2 mt-3 {(active == "information" ? "active" : "")}");
+            _builder.AddAttribute(++seq, "href", hrefValueInformation);
+            _builder.AddContent(++seq, "Information");
+            _builder.CloseElement();
+            _builder.CloseElement();
+            
             // "SQL" link
             _builder.OpenElement(++seq, "li");
             _builder.OpenElement(++seq, "a");
