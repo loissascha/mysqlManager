@@ -3,11 +3,16 @@
 @using MySqlManager.Dtos
 @using MySqlManager.Services
 @inject MySqlManagerService MySqlManagerService
+@inject IJSRuntime JSRuntime
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <div class="mb-3">
     <label for="tableName" class="form-label">Table Name</label>
-    <input type="text" class="form-control" id="tableName"/>
+    <input type="text" class="form-control" id="tableName" @bind="_tableName" />
+</div>
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="AddLine">+</button>
+    <button class="btn btn-primary" @onclick="RemoveLine">-</button>
 </div>
 <div class="mb-3">
     <table class="table table-sm table-bordered table-striped">
@@ -69,6 +74,14 @@
 
 <script>
     $(".btselect").selectpicker();
+    
+    var newTable = newTable || {};
+    newTable.updatedLines = function (dotnetObject) {
+        dotnetObject.invokeMethodAsync("UpdatedLines");
+    };
+    newTable.updateSelectpicker = function (dotnetObject) {
+        $(".btselect").selectpicker();
+    };
 </script>
 
 @code {
@@ -76,24 +89,51 @@
     [Parameter]
     public string? Database { get; set; }
 
-    private int _amountCols = 3;
+    private const int AmountStartCols = 3;
     private List<TableLine> _tableLines = new();
+
+    private string _tableName = "";
     
     protected override void OnInitialized()
     {
         _tableLines = new List<TableLine>();
-        for (var i = 0; i < _amountCols; i++)
+        for (var i = 0; i < AmountStartCols; i++)
         {
             _tableLines.Add(new TableLine());
         }
     }
 
-    public void ConfirmButton()
+    private void ConfirmButton()
     {
         foreach (var t in _tableLines)
         {
             Console.WriteLine($"Name: {t.Name} Type: {t.Type}");
         }
+    }
+
+    private async Task AddLine()
+    {
+        _tableLines.Add(new TableLine());
+        await InvokeAsync(StateHasChanged);
+        var dotnetReference = DotNetObjectReference.Create(this);
+        await JSRuntime.InvokeVoidAsync("newTable.updatedLines", dotnetReference);
+    }
+
+    private async Task RemoveLine()
+    {
+        _tableLines.Remove(_tableLines[^1]);
+        await InvokeAsync(StateHasChanged);
+        var dotnetReference = DotNetObjectReference.Create(this);
+        await JSRuntime.InvokeVoidAsync("newTable.updatedLines", dotnetReference);
+    }
+
+    // first invoke javascript method "updatedLines" which then invokes this method which then again invokes a javascript function to update the select picker.
+    // if select picker gets updated directly it results in the latest one not getting updated
+    [JSInvokable("UpdatedLines")]
+    public async Task UpdatedLines()
+    {
+        var dotnetReference = DotNetObjectReference.Create(this);
+        await JSRuntime.InvokeVoidAsync("newTable.updateSelectpicker", dotnetReference);
     }
 
     public class TableLine
