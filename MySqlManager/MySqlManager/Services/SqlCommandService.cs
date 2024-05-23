@@ -23,6 +23,7 @@ public class SqlCommandService(DatabaseConnectionService _databaseConnectionServ
 
         var result = new RunSqlResult();
         
+        
         await using var conn = await _databaseConnectionService.EstablishConnection();
         
         // if its a select query -> get the actual count for pagination
