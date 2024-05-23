@@ -8,4 +8,5 @@ public class RunSqlResult
     public int ResultCount { get; set; }
     public int Offset { get; set; }
     public int Limit { get; set; }
+    public bool ShowDatagrid { get; set; }
 }

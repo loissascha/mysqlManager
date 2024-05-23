@@ -41,18 +41,24 @@ Parameter: @Database / @Table
 }
 @if (_runSqlResult != null)
 {
-    <p class="mt-4">Showing @_runSqlResult.Offset-@(_runSqlResult.Offset + _runSqlResult.Limit) of @_runSqlResult.ResultCount Results</p>
-    <table class="table table-sm table-bordered table-striped mt-2">
-        <thead>
-        <tr>
-            @foreach (var column in _runSqlResult.DataTable.Columns)
-            {
-                <th>@column.ToString()</th>
-            }
-        </tr>
-        </thead>
-        <tbody>
-        
+    if (!_runSqlResult.ShowDatagrid)
+    {
+        <div class="alert alert-success mt-4" role="alert">Success!</div>   
+    }
+    else
+    {
+        <p class="mt-4">Showing @_runSqlResult.Offset-@(_runSqlResult.Offset + _runSqlResult.Limit) of @_runSqlResult.ResultCount Results</p>
+        <table class="table table-sm table-bordered table-striped mt-2">
+            <thead>
+            <tr>
+                @foreach (var column in _runSqlResult.DataTable.Columns)
+                {
+                    <th>@column.ToString()</th>
+                }
+            </tr>
+            </thead>
+            <tbody>
+
             @foreach (var row in _runSqlResult.DataTable.Rows)
             {
                 var c = row as DataRow;
@@ -66,9 +72,10 @@ Parameter: @Database / @Table
                     }
                 </tr>
             }
-        
-        </tbody>
-    </table>
+
+            </tbody>
+        </table>
+    }
 }
 
 @code {
@@ -121,6 +128,5 @@ Parameter: @Database / @Table
         _columnInformations = await TableInformationService.GetTableColumnInfos(Database, Table);
     }
 
-
-
+    
 }

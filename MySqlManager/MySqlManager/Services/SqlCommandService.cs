@@ -16,7 +16,7 @@ public class SqlCommandService(DatabaseConnectionService _databaseConnectionServ
 
         // remove ending ';' if there is one (fixes issue with limit if it's not manually set)
         sql = sql.Trim();
-        if (sql.EndsWith(';'))
+        while (sql.EndsWith(';'))
         {
             sql = sql.TrimEnd(';');
         }
@@ -29,6 +29,7 @@ public class SqlCommandService(DatabaseConnectionService _databaseConnectionServ
         var resultCount = -1;
         result.Offset = -1;
         result.Limit = -1;
+        result.ShowDatagrid = false;
         if (sql.StartsWith("select", StringComparison.CurrentCultureIgnoreCase))
         {
             try
@@ -49,6 +50,8 @@ public class SqlCommandService(DatabaseConnectionService _databaseConnectionServ
                 result.Offset = 0;
                 result.Limit = 300;
             }
+
+            result.ShowDatagrid = true;
         }
         result.ResultCount = resultCount;
 
