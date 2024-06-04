@@ -7,7 +7,7 @@ public abstract class MySqlDumpService
     public static bool IsCommandAvailable()
     {
         using var process = new Process();
-        process.StartInfo.FileName = "mysqldump";
+        process.StartInfo.FileName = "mariadb-dump";
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.RedirectStandardError = true;
@@ -37,7 +37,7 @@ public abstract class MySqlDumpService
         }
         
         using Process process = new Process();
-        process.StartInfo.FileName = "mysqldump";
+        process.StartInfo.FileName = "mariadb-dump";
         process.StartInfo.RedirectStandardInput = false;
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.Arguments = $"--skip-ssl --host={host} --user={user} --password={password} --port={port} {database}";
