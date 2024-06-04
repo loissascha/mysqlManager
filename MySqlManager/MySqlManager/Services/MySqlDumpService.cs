@@ -36,7 +36,7 @@ public abstract class MySqlDumpService
             File.Delete(filepath);
         }
         
-        using Process process = new Process();
+        using var process = new Process();
         process.StartInfo.FileName = "mariadb-dump";
         process.StartInfo.RedirectStandardInput = false;
         process.StartInfo.RedirectStandardOutput = true;
@@ -45,9 +45,9 @@ public abstract class MySqlDumpService
 
         process.Start();
 
-        using (StreamReader reader = process.StandardOutput)
+        using (var reader = process.StandardOutput)
         {
-            string result = reader.ReadToEnd();
+            var result = reader.ReadToEnd();
 
             File.WriteAllText(filepath, result);
         }
@@ -60,7 +60,7 @@ public abstract class MySqlDumpService
         var settingsPath = SettingsService.GetSettingsFolderPath();
         var filepath = Path.Combine(settingsPath, "dump_" + database + "_" + table + ".sql");
         
-        using Process process = new Process();
+        using var process = new Process();
         process.StartInfo.FileName = "mariadb-dump";
         process.StartInfo.RedirectStandardInput = false;
         process.StartInfo.RedirectStandardOutput = true;
@@ -69,9 +69,9 @@ public abstract class MySqlDumpService
 
         process.Start();
 
-        using (StreamReader reader = process.StandardOutput)
+        using (var reader = process.StandardOutput)
         {
-            string result = reader.ReadToEnd();
+            var result = reader.ReadToEnd();
 
             File.WriteAllText(filepath, result);
         }
@@ -81,7 +81,7 @@ public abstract class MySqlDumpService
     
     public static void MySqlImport(string host, string port, string user, string password, string database, string filepath)
     {
-        using Process process = new Process();
+        using var process = new Process();
         process.StartInfo.FileName = "mysql";
         process.StartInfo.RedirectStandardInput = true; 
         process.StartInfo.RedirectStandardOutput = false;
@@ -90,9 +90,9 @@ public abstract class MySqlDumpService
 
         process.Start();
 
-        using (StreamWriter writer = process.StandardInput)
+        using (var writer = process.StandardInput)
         {
-            string fileContent = File.ReadAllText(filepath);
+            var fileContent = File.ReadAllText(filepath);
             writer.Write(fileContent);
         }
 
