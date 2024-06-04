@@ -13,7 +13,7 @@ Parameter: @Database / @Table
 {
     <div class="alert alert-warning">Duming database...</div>
 }
-@if (_dumpingDatabaseFinished)
+@if (_dumpingTableFinished)
 {
     <div class="alert alert-success">Database dumped!</div>
 }
@@ -25,35 +25,35 @@ Parameter: @Database / @Table
 
 @code {
 
-[Parameter] public string? Database { get; set; }
+    [Parameter] public string? Database { get; set; }
 
-[Parameter] public string? Table { get; set; }
+    [Parameter] public string? Table { get; set; }
 
-private bool _dumpingTable = false;
-private bool _dumpingDatabaseFinished = false;
+    private bool _dumpingTable = false;
+    private bool _dumpingTableFinished = false;
 
-protected override void OnInitialized()
-{
-    TopRowService.SetTopRowForTableView(Database, Table, "export");
-}
+    protected override void OnInitialized()
+    {
+        TopRowService.SetTopRowForTableView(Database, Table, "export");
+    }
 
-public void Dispose()
-{
-    TopRowService.ClearTopRow();
-}
+    public void Dispose()
+    {
+        TopRowService.ClearTopRow();
+    }
 
-private async Task DumpTableButton()
-{
-    Console.WriteLine("Dumping table...");
-    _dumpingTable = true;
-    var setting = SettingsService.GetActiveConnectionSetting();
-    await InvokeAsync(StateHasChanged);
-    await Task.Delay(5);
-    if (setting == null) return;
-    MySqlDumpService.DumpTable(setting.Server, setting.Port!, setting.User, setting.Password, Database!, Table!);
-    _dumpingTable = false;
-    _dumpingDatabaseFinished = true;
-    Console.WriteLine("DumpTable");
-}
+    private async Task DumpTableButton()
+    {
+        Console.WriteLine("Dumping table...");
+        _dumpingTable = true;
+        var setting = SettingsService.GetActiveConnectionSetting();
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(5);
+        if (setting == null) return;
+        MySqlDumpService.DumpTable(setting.Server, setting.Port!, setting.User, setting.Password, Database!, Table!);
+        _dumpingTable = false;
+        _dumpingTableFinished = true;
+        Console.WriteLine("DumpTable");
+    }
 
 }
