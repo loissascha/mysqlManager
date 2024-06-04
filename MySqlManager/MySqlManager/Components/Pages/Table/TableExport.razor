@@ -1,0 +1,27 @@
+@page "/database/{Database}/table/{Table}/export"
+@using MySqlManager.Services
+@implements IDisposable
+@inject TopRowService TopRowService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@attribute [StreamRendering]
+
+<h1>Export</h1>
+Parameter: @Database / @Table
+
+@code {
+
+[Parameter] public string? Database { get; set; }
+
+[Parameter] public string? Table { get; set; }
+
+protected override void OnInitialized()
+{
+    TopRowService.SetTopRowForTableView(Database, Table, "export");
+}
+
+public void Dispose()
+{
+    TopRowService.ClearTopRow();
+}
+
+}
