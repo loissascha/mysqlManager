@@ -40,7 +40,7 @@ public abstract class MySqlDumpService
         process.StartInfo.FileName = "mysqldump";
         process.StartInfo.RedirectStandardInput = false;
         process.StartInfo.RedirectStandardOutput = true;
-        process.StartInfo.Arguments = $"--host={host} --user={user} --password={password} --port={port} {database}";
+        process.StartInfo.Arguments = $"--skip-ssl --host={host} --user={user} --password={password} --port={port} {database}";
         process.StartInfo.UseShellExecute = false;
 
         process.Start();
