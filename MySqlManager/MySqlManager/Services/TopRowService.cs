@@ -69,9 +69,29 @@ public class TopRowService
             _builder.OpenElement(++seq, "li");
             _builder.OpenElement(++seq, "a");
             var hrefValueInsert = $"/database/{database}/table/{table}/insert";
-            _builder.AddAttribute(++seq, "class", $"btn btn-outline-secondary mt-3 {(active == "insert" ? "active" : "")}");
+            _builder.AddAttribute(++seq, "class", $"btn btn-outline-secondary me-2 mt-3 {(active == "insert" ? "active" : "")}");
             _builder.AddAttribute(++seq, "href", hrefValueInsert);
             _builder.AddContent(++seq, "Insert");
+            _builder.CloseElement();
+            _builder.CloseElement();
+            
+            // "Import" link
+            _builder.OpenElement(++seq, "li");
+            _builder.OpenElement(++seq, "a");
+            var hrefValueImport = $"/database/{database}/table/{table}/import";
+            _builder.AddAttribute(++seq, "class", $"btn btn-outline-secondary me-2 mt-3 {(active == "import" ? "active" : "")}");
+            _builder.AddAttribute(++seq, "href", hrefValueImport);
+            _builder.AddContent(++seq, "Import");
+            _builder.CloseElement();
+            _builder.CloseElement();
+            
+            // "Export" link
+            _builder.OpenElement(++seq, "li");
+            _builder.OpenElement(++seq, "a");
+            var hrefValueExport = $"/database/{database}/table/{table}/export";
+            _builder.AddAttribute(++seq, "class", $"btn btn-outline-secondary mt-3 {(active == "export" ? "active" : "")}");
+            _builder.AddAttribute(++seq, "href", hrefValueExport);
+            _builder.AddContent(++seq, "Export");
             _builder.CloseElement();
             _builder.CloseElement();
             
