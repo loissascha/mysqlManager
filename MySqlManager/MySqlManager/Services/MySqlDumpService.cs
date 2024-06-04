@@ -61,10 +61,10 @@ public abstract class MySqlDumpService
         var filepath = Path.Combine(settingsPath, "dump_" + database + "_" + table + ".sql");
         
         using Process process = new Process();
-        process.StartInfo.FileName = "mysqldump";
+        process.StartInfo.FileName = "mariadb-dump";
         process.StartInfo.RedirectStandardInput = false;
         process.StartInfo.RedirectStandardOutput = true;
-        process.StartInfo.Arguments = $"--host={host} --user={user} --password={password} --port={port} {database} {table}";
+        process.StartInfo.Arguments = $"--skip-ssl --host={host} --user={user} --password={password} --port={port} {database} {table}";
         process.StartInfo.UseShellExecute = false;
 
         process.Start();

@@ -2,17 +2,35 @@
 @using MySqlManager.Services
 @implements IDisposable
 @inject TopRowService TopRowService
+@inject SettingsService SettingsService
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [StreamRendering]
 
 <h1>Export</h1>
 Parameter: @Database / @Table
 
+@if (_dumpingTable)
+{
+    <div class="alert alert-warning">Duming database...</div>
+}
+@if (_dumpingDatabaseFinished)
+{
+    <div class="alert alert-success">Database dumped!</div>
+}
+
+@if (MySqlDumpService.IsCommandAvailable())
+{
+    <div class="mt-3 mb-3"><button class="btn btn-primary" @onclick="DumpTableButton">Dump Database</button></div>
+}
+
 @code {
 
 [Parameter] public string? Database { get; set; }
 
 [Parameter] public string? Table { get; set; }
+
+private bool _dumpingTable = false;
+private bool _dumpingDatabaseFinished = false;
 
 protected override void OnInitialized()
 {
@@ -22,6 +40,20 @@ protected override void OnInitialized()
 public void Dispose()
 {
     TopRowService.ClearTopRow();
+}
+
+private async Task DumpTableButton()
+{
+    Console.WriteLine("Dumping table...");
+    _dumpingTable = true;
+    var setting = SettingsService.GetActiveConnectionSetting();
+    await InvokeAsync(StateHasChanged);
+    await Task.Delay(5);
+    if (setting == null) return;
+    MySqlDumpService.DumpTable(setting.Server, setting.Port!, setting.User, setting.Password, Database!, Table!);
+    _dumpingTable = false;
+    _dumpingDatabaseFinished = true;
+    Console.WriteLine("DumpTable");
 }
 
 }
