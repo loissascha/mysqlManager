@@ -63,6 +63,30 @@ else
                     <td><a style="cursor:pointer;" @onclick="@(e => { TruncateTable(table.Name);})">Truncate</a></td>
                 </tr>
             }
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th>
+                    @if (_databaseSizeInMb < 1)
+                    {
+                    var sizeInKb = Math.Round((decimal)_databaseSizeInMb * 1000, 1);
+                    <text>@sizeInKb.ToString("F1") KB</text>
+                    }
+                    else if(_databaseSizeInMb > 1000)
+                    {
+                    var sizeInGb = Math.Round((decimal)_databaseSizeInMb / 1000, 1);
+                    <text>@sizeInGb.ToString("F1") GB</text>
+                    }
+                    else if(_databaseSizeInMb != null)
+                    {
+                    var sizeInMb = Math.Round((decimal)_databaseSizeInMb, 1);
+                    <text>@sizeInMb.ToString("F1") MB</text>
+                    }
+                </th>
+                <th></th>
+            </tr>
             </tbody>
         </table>
     </div>
@@ -74,6 +98,7 @@ else
     
     private List<TableInformation>? _tableList;
     private bool _loading;
+    private decimal? _databaseSizeInMb;
     
 
     [Parameter]
@@ -84,6 +109,7 @@ else
     {
         _tableList = null;
         _loading = true;
+        _databaseSizeInMb = null;
         TopRowService.SetTopRowForDatabaseView(Database, "overview");
         await Task.Delay(5);
         await LoadTableList();
@@ -103,7 +129,17 @@ else
         if (Database == "information_schema") return;
         Console.WriteLine("Loading table list...");
         _tableList = await TableInformationService.GetTableList(Database, true);
+        GetDatabaseSize();
         _loading = false;
+    }
+
+    private void GetDatabaseSize()
+    {
+        _databaseSizeInMb = 0;
+        foreach (var item in _tableList)
+        {
+            _databaseSizeInMb += item.SizeInMb;
+        }
     }
 
     private void TruncateTable(string? tableName)

@@ -8,16 +8,16 @@
 
 @if (_dumpingDatabase)
 {
-<div class="alert alert-warning">Duming database...</div>
+    <div class="alert alert-warning">Duming database...</div>
 }
 @if (_dumpingDatabaseFinished)
 {
-<div class="alert alert-success">Database dumped!</div>
+    <div class="alert alert-success">Database dumped!</div>
 }
 
 @if (MySqlDumpService.IsCommandAvailable())
 {
-<div class="mt-3 mb-3"><button class="btn btn-primary" @onclick="DumpDatabaseButton">Dump Database</button></div>
+    <div class="mt-3 mb-3"><button class="btn btn-primary" @onclick="DumpDatabaseButton">Dump Database</button></div>
 }
 
 
