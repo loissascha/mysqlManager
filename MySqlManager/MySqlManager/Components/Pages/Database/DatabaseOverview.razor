@@ -6,7 +6,7 @@
 @inject TableInformationService TableInformationService
 @inject SettingsService SettingsService
 @inject TopRowService TopRowService
-@inject OverlayService OverlayService
+@inject TruncateService TruncateService
 @inject IJSRuntime JSRuntime
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [StreamRendering]
@@ -202,9 +202,10 @@ else
     }
 
     [JSInvokable]
-    public void TruncateTable(string value)
+    public async Task TruncateTable(string tableName)
     {
-        Console.WriteLine($"Truncate {value}");
+        Console.WriteLine($"Truncate {tableName}");
+        await TruncateService.TruncateTable(Database!, tableName);
     }
 
 }
