@@ -397,3 +397,7 @@ main {
     background-color: var(--color-accent0);
     color: var(--color-text-dark);
 }
+
+.modal-content {
+    background-color: var(--color-surface0);
+}
