@@ -141,6 +141,7 @@ else
 
     private async Task LoadTableList()
     {
+        // todo fix for those databases
         if (Database == null) return;
         if (Database == "mysql") return;
         if (Database == "sys") return;
@@ -155,6 +156,8 @@ else
     private void GetDatabaseSize()
     {
         _databaseSizeInMb = 0;
+        if (_tableList == null)
+            return;
         foreach (var item in _tableList)
         {
             _databaseSizeInMb += item.SizeInMb;
