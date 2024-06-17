@@ -7,6 +7,7 @@
 @inject SettingsService SettingsService
 @inject TopRowService TopRowService
 @inject OverlayService OverlayService
+@inject IJSRuntime JSRuntime
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [StreamRendering]
 
@@ -61,7 +62,6 @@ else
                         }
                     </td>
                     <td>
-                        <!--a style="cursor:pointer;" @onclick="@(e => { TruncateTable(table.Name); })">Truncate</!--a-->
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#truncateModal" data-bs-table-name="@(table.Name)">
                             Truncate
                         </button>
@@ -110,24 +110,41 @@ else
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Truncate</button>
+                <button type="button" class="btn btn-primary" @onclick="Truncate">Truncate</button>
             </div>
         </div>
     </div>
 </div>
+<input type="hidden" id="truncatingTable" />
 
 <script>
-    const truncateModal = document.getElementById('truncateModal');
+    var truncateModal = document.getElementById('truncateModal');
+    var truncatingTableInput = document.getElementById('truncatingTable');
     truncateModal.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget;
-        const tableName = button.getAttribute('data-bs-table-name');
+        var button = event.relatedTarget;
+        var tableName = button.getAttribute('data-bs-table-name');
+        truncatingTableInput.value = tableName;
 
-        const modalTitle = truncateModal.querySelector('.modal-title');
-        const modalBody = truncateModal.querySelector('.modal-body');
+        var modalTitle = truncateModal.querySelector('.modal-title');
+        var modalBody = truncateModal.querySelector('.modal-body');
 
         modalTitle.textContent = 'Truncate ' + tableName;
-        modalBody.innerHTML = '<p>Do you really want to truncate this table?</p>';
+        modalBody.innerHTML = '\
+            <div class="alert alert-danger">Attention! This action can not be undone!</div>\
+            <p>Do you really want to truncate the table ' + tableName + '?</p>\
+            ';
     });
+    
+    var dbOverview = dbOverview || {};
+    
+    dbOverview.truncate = function(dotnetobject) {
+        console.log('truncate');
+        console.log(dotnetobject);
+        let tableName = document.getElementById('truncatingTable').value;
+        console.log(tableName);
+        dotnetobject.invokeMethodAsync('TruncateTable', tableName);
+    }
+    
 </script>
 
 @code {
@@ -178,17 +195,16 @@ else
         }
     }
 
-    private void TruncateTable(string? tableName)
+    private async Task Truncate()
     {
-        // todo remove, deprecated
-        Console.WriteLine("Truncate Table: " + tableName);
-        OverlayService.SetOverlay("Truncate " + tableName, _builder =>
-        {
-            var seq = -1;
-            _builder.AddContent(++seq, "Do you really want to truncate this table?");
-        });
-        OverlayService.ShowOverlay();
+        var dotnetReference = DotNetObjectReference.Create(this);
+        await JSRuntime.InvokeVoidAsync("dbOverview.truncate", dotnetReference);
     }
 
-    
+    [JSInvokable]
+    public void TruncateTable(string value)
+    {
+        Console.WriteLine($"Truncate {value}");
+    }
+
 }
