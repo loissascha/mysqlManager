@@ -60,7 +60,12 @@ else
                             <text>@sizeInMb.ToString("F1") MB</text>
                         }
                     </td>
-                    <td><a style="cursor:pointer;" @onclick="@(e => { TruncateTable(table.Name);})">Truncate</a></td>
+                    <td>
+                        <a style="cursor:pointer;" @onclick="@(e => { TruncateTable(table.Name); })">Truncate</a>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#truncateModal" data-bs-table-name="@(table.Name)">
+                            Truncate
+                        </button>
+                    </td>
                 </tr>
             }
             <tr>
@@ -90,20 +95,34 @@ else
             </tbody>
         </table>
     </div>
+                    
+    <div class="modal" tabindex="-1" id="truncateModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Modal body text goes here.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div> 
 }
 
 
 @code {
-    // TODO use bootstrap modal instead of ovleray component
-    
     private List<TableInformation>? _tableList;
     private bool _loading;
     private decimal? _databaseSizeInMb;
-    
 
     [Parameter]
     public string? Database { get; set; }
-    
     
     protected override async Task OnInitializedAsync()
     {
@@ -144,6 +163,7 @@ else
 
     private void TruncateTable(string? tableName)
     {
+        // todo remove, deprecated
         Console.WriteLine("Truncate Table: " + tableName);
         OverlayService.SetOverlay("Truncate " + tableName, _builder =>
         {
