@@ -103,14 +103,14 @@ else
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Modal title</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="truncateModalCloseButton"></button>
             </div>
             <div class="modal-body">
                 <p>Modal body text goes here.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" @onclick="Truncate">Truncate</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="truncateModalClose2Button">Close</button>
+                <button type="button" class="btn btn-primary" @onclick="Truncate" id="truncateModalTruncateButton">Truncate</button>
             </div>
         </div>
     </div>
@@ -138,12 +138,40 @@ else
     var dbOverview = dbOverview || {};
     
     dbOverview.truncate = function(dotnetobject) {
-        console.log('truncate');
-        console.log(dotnetobject);
-        let tableName = document.getElementById('truncatingTable').value;
-        console.log(tableName);
+        let tableName = truncatingTableInput.value;
         dotnetobject.invokeMethodAsync('TruncateTable', tableName);
-    }
+    };
+    
+    dbOverview.truncateLoading = function(dotnetobject) {
+        var modalTitle = truncateModal.querySelector('.modal-title');
+        var modalBody = truncateModal.querySelector('.modal-body');
+
+        modalTitle.textContent = 'Loading...';
+        modalBody.innerHTML = '\
+            <p>Loading...</p>\
+            ';
+        
+        var truncateModalCloseButton = document.getElementById('truncateModalCloseButton');
+        var truncateModalClose2Button = document.getElementById('truncateModalClose2Button');
+        var truncateModalTruncateButton = document.getElementById('truncateModalTruncateButton');
+        
+        truncateModalCloseButton.style.display = 'none';
+        truncateModalClose2Button.style.display = 'none';
+        truncateModalTruncateButton.style.display = 'none';
+    };
+    
+    dbOverview.truncateFinished = function (dotnetobject) {
+        var modal = bootstrap.Modal.getInstance(truncateModal);
+        modal.hide();
+        
+        var truncateModalCloseButton = document.getElementById('truncateModalCloseButton');
+        var truncateModalClose2Button = document.getElementById('truncateModalClose2Button');
+        var truncateModalTruncateButton = document.getElementById('truncateModalTruncateButton');
+
+        truncateModalCloseButton.style.display = 'block';
+        truncateModalClose2Button.style.display = 'block';
+        truncateModalTruncateButton.style.display = 'block';
+    };
     
 </script>
 
@@ -204,8 +232,13 @@ else
     [JSInvokable]
     public async Task TruncateTable(string tableName)
     {
+        var dotnetReference = DotNetObjectReference.Create(this);
+        await JSRuntime.InvokeVoidAsync("dbOverview.truncateLoading", dotnetReference);
         Console.WriteLine($"Truncate {tableName}");
         await TruncateService.TruncateTable(Database!, tableName);
+        await JSRuntime.InvokeVoidAsync("dbOverview.truncateFinished", dotnetReference);
+        await LoadTableList();
+        await InvokeAsync(StateHasChanged);
     }
 
 }

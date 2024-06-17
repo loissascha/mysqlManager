@@ -10,11 +10,5 @@ public class TruncateService(DatabaseConnectionService _databaseConnectionServic
         
         await using var cmd = new MySqlCommand($"USE {database};SET FOREIGN_KEY_CHECKS = 0;TRUNCATE {table};SET FOREIGN_KEY_CHECKS = 1;", conn);
         await cmd.ExecuteNonQueryAsync();
-        /*
-         * USE databaseName;
-         * SET FOREIGN_KEY_CHECKS = 0;
-         * TRUNCATE tableName;
-         * SET FOREIGN_KEY_CHECKS = 1;
-         */
     }
 }
