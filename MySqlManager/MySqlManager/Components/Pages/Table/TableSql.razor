@@ -95,6 +95,7 @@ Parameter: @Database / @Table
     protected override async Task OnInitializedAsync()
     {
         _runSqlResult = null;
+        SqlAreaContent = $"SELECT * FROM `{Table}` WHERE 1";
         TopRowService.SetTopRowForTableView(Database, Table, "sql");
         await GetTableColumnsInfo();
     }
