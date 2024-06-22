@@ -56,14 +56,14 @@ public class TopRowService
             _builder.CloseElement();
             
             // "Search" link
-            _builder.OpenElement(++seq, "li");
-            _builder.OpenElement(++seq, "a");
-            var hrefValueSearch = $"/database/{database}/table/{table}/search";
-            _builder.AddAttribute(++seq, "class", $"btn btn-outline-secondary me-2 mt-3 {(active == "search" ? "active" : "")}");
-            _builder.AddAttribute(++seq, "href", hrefValueSearch);
-            _builder.AddContent(++seq, "Search");
-            _builder.CloseElement();
-            _builder.CloseElement();
+            //_builder.OpenElement(++seq, "li");
+            //_builder.OpenElement(++seq, "a");
+            //var hrefValueSearch = $"/database/{database}/table/{table}/search";
+            //_builder.AddAttribute(++seq, "class", $"btn btn-outline-secondary me-2 mt-3 {(active == "search" ? "active" : "")}");
+            //_builder.AddAttribute(++seq, "href", hrefValueSearch);
+            //_builder.AddContent(++seq, "Search");
+            //_builder.CloseElement();
+            //_builder.CloseElement();
             
             // "Insert" link
             _builder.OpenElement(++seq, "li");
