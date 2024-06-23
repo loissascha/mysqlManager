@@ -8,6 +8,11 @@
 <h1>Import</h1>
 Parameter: @Database / @Table
 
+<div>
+    <input type="file" @bind="ImportFile" />
+    <button @onclick="ImportButtonPressed">Import</button>
+</div>
+
 @code {
 
 [Parameter] public string? Database { get; set; }
@@ -22,6 +27,16 @@ protected override void OnInitialized()
 public void Dispose()
 {
     TopRowService.ClearTopRow();
+}
+
+public object ImportFile
+{
+    get;
+    set;
+}
+
+private void ImportButtonPressed()
+{
 }
 
 }
