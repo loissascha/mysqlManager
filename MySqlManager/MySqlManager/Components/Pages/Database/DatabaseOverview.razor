@@ -200,12 +200,8 @@ else
 
     private async Task LoadTableList()
     {
-        // todo fix for those databases
         if (Database == null) return;
-        if (Database == "mysql") return;
-        if (Database == "sys") return;
-        if (Database == "performance_schema") return;
-        if (Database == "information_schema") return;
+        if (Database == "sys") return; // TODO fix for this db
         Console.WriteLine("Loading table list...");
         _tableList = await TableInformationService.GetTableList(Database, true);
         GetDatabaseSize();
