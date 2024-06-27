@@ -21,6 +21,10 @@ Parameter: @Database
     {
         <div class="mt-4">Loading...</div>
     }
+    else
+    {
+        <div class="mt-4">Nothing to show</div>
+    }
 }
 else
 {
@@ -200,8 +204,11 @@ else
 
     private async Task LoadTableList()
     {
-        if (Database == null) return;
-        if (Database == "sys") return; // TODO fix for this db
+        if (Database is null or "sys") // todo fix for sys 
+        {
+            _loading = false;
+            return;
+        }
         Console.WriteLine("Loading table list...");
         _tableList = await TableInformationService.GetTableList(Database, true);
         GetDatabaseSize();
